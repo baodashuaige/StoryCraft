@@ -71,7 +71,7 @@ export interface DialogueServiceResult {
   /** Gate evidence from AI. */
   gateEvidence: string;
 
-  // ── Error diagnostics (only when source === "error") ──
+  // ── Error diagnostics (set when AI provider call failed) ──
   /** Diagnostic info for AI provider failures. */
   errorDiagnostics?: {
     /** Why the error occurred: "cooldown_active" | "provider_call_failed". */
@@ -82,23 +82,16 @@ export interface DialogueServiceResult {
     consecutiveFailures: number;
     /** Last error message from the provider, if any. */
     lastError?: string;
-    /** Remaining cooldown in ms (only when reason is "cooldown_active"). */
-    cooldownRemainingMs?: number;
   };
 }
 
 // ─── DialogueService ───────────────────────────────────────────────
-
-/** Cooldown in ms after a provider failure before retrying. */
-const PROVIDER_RETRY_COOLDOWN_MS = 30_000;
 
 export class DialogueService {
   private engine: DialogueEngine;
   private getProviderStatus: (() => ProviderStatus) | undefined;
   private conversationHistory: Map<string, ConversationExchange[]>;
   private maxHistory = 5;
-  /** Timestamp of last provider failure; used to avoid rapid retry hangs. */
-  private lastProviderErrorAt = 0;
 
   constructor(engine: DialogueEngine, getProviderStatus?: () => ProviderStatus) {
     this.engine = engine;
@@ -168,62 +161,48 @@ export class DialogueService {
       validTopicGateIds: validGateIds,
     };
 
-    // Call AI engine (with cooldown check to avoid rapid retry hangs)
-    const now = Date.now();
-    if (this.lastProviderErrorAt && (now - this.lastProviderErrorAt) < PROVIDER_RETRY_COOLDOWN_MS) {
-      // Provider failed recently — don't retry yet, return error immediately
-      console.warn("[DialogueService] cooldown active, skipping (ms since last error):", now - this.lastProviderErrorAt);
-      return this.handleProviderError(npcId, playerInput, state, adventure, "cooldown_active");
-    }
-
     const result = await this.engine.handleFreeFormDialogue({
       npcScript,
       playerInput,
       context,
     });
 
-    // ─── Provider error (AI was available but call failed) ─────────
+    // ─── Provider error → degrade gracefully ─────────────────────
     if (result.source === "passthrough") {
-      // AI was configured but the call failed — show system error
-      // (No keyword fallback in free dialogue path — Phase 6)
-      this.lastProviderErrorAt = Date.now();
-      return this.handleProviderError(npcId, playerInput, state, adventure, "provider_call_failed");
+      return this.degradeResult(npcId, playerInput, state, adventure);
     }
 
     // ─── AI success → classify → policy → apply ────────────────────
-    this.lastProviderErrorAt = 0; // reset cooldown on success
     return this.handleAiResult(
       npcId, playerInput, npcAlias, result, state, adventure,
       topicGates, validGateIds,
     );
   }
 
-  // ─── Provider error handler ──────────────────────────────────────
+  // ─── Degraded result (AI unavailable or call failed) ────────────
+  // Returns a normal-looking result so the UI does not block the player.
+  // The NPC gives a brief fallback line; the debug block still shows diagnostics.
 
-  private handleProviderError(
+  private degradeResult(
     _npcId: string,
     playerInput: string,
     state: WorldState,
     adventure: AdventureDefinition,
-    reason: string = "provider_call_failed",
   ): DialogueServiceResult {
     const providerStatus = this.getProviderStatus?.();
-    const now = Date.now();
-    const cooldownRemainingMs = this.lastProviderErrorAt
-      ? Math.max(0, PROVIDER_RETRY_COOLDOWN_MS - (now - this.lastProviderErrorAt))
-      : undefined;
+    const fallback = "…";
 
     const exchange: ConversationExchange = {
       playerInput,
-      npcResponse: "",
+      npcResponse: fallback,
       triggeredTopicGateId: null,
       timestamp: Date.now(),
     };
-    // Do NOT record empty exchanges in history
+    // Do NOT record transient failure exchanges in history
 
     return {
-      dialogue: "",
-      source: "error",
+      dialogue: fallback,
+      source: "ai",
       state,
       visibleState: getVisibleState(state, adventure),
       triggeredGateId: null,
@@ -244,11 +223,10 @@ export class DialogueService {
       gateConfidence: "low",
       gateEvidence: "",
       errorDiagnostics: {
-        reason,
+        reason: "provider_call_failed",
         providerState: providerStatus?.state ?? "unknown",
         consecutiveFailures: providerStatus?.consecutiveFailures ?? 0,
         lastError: providerStatus?.lastError,
-        cooldownRemainingMs: reason === "cooldown_active" ? cooldownRemainingMs : undefined,
       },
     };
   }

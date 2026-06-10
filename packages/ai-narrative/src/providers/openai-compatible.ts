@@ -139,6 +139,7 @@ export class OpenAICompatibleProvider implements NarrativeProvider {
       });
     } catch (err) {
       clearTimeout(timeout);
+      this.recordFailure(err instanceof Error ? err.message : String(err));
       if ((err as Error).name === "AbortError") {
         throw new Error("AI request timed out after 12 seconds");
       }

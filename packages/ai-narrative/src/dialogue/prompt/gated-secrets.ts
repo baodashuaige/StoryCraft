@@ -13,8 +13,16 @@ export function formatGatedSecretsEn(script: NpcScript, validTopicGateIds: strin
   }
   return available
     .map(
-      (s) =>
-        `  [${s.topicGateId}] ${s.description}\n    Reveal conditions: ${s.revealConditions}\n    If pressed on this: ${s.reactionWhenPressed}`
+      (s) => {
+        const keywords = [
+          ...(s.triggerKeywords ?? []),
+          ...(s.triggerPhrases ?? []),
+        ];
+        const keywordLine = keywords.length > 0
+          ? `\n    Trigger keywords: ${keywords.join(", ")}`
+          : "";
+        return `  [${s.topicGateId}] ${s.description}\n    Reveal conditions: ${s.revealConditions}${keywordLine}\n    If pressed on this: ${s.reactionWhenPressed}`;
+      }
     )
     .join("\n");
 }
@@ -28,8 +36,16 @@ export function formatGatedSecretsZh(script: NpcScript, validTopicGateIds: strin
   }
   return available
     .map(
-      (s) =>
-        `  [${s.topicGateId}] ${s.description}\n    触发条件：${s.revealConditions}\n    被追问时：${s.reactionWhenPressed}`
+      (s) => {
+        const keywords = [
+          ...(s.triggerKeywords ?? []),
+          ...(s.triggerPhrases ?? []),
+        ];
+        const keywordLine = keywords.length > 0
+          ? `\n    触发关键词：${keywords.join(", ")}`
+          : "";
+        return `  [${s.topicGateId}] ${s.description}\n    触发条件：${s.revealConditions}${keywordLine}\n    被追问时：${s.reactionWhenPressed}`;
+      }
     )
     .join("\n");
 }

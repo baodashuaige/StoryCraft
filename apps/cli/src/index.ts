@@ -113,15 +113,9 @@ async function main(): Promise<void> {
             pack,
           });
 
-          if (result.source === "error") {
-            renderNarrative(
-              lang === "zh" ? "（NPC 沉默不语…AI 服务暂时不可用）" : "(The NPC stays silent… AI service unavailable)",
-              "error",
-            );
-          } else {
-            renderNarrative(`[${npcName}] ${result.dialogue}`, "ai");
-            renderGateEffects(result.gateEffects, tr);
-          }
+          state = result.state;
+          renderNarrative(`[${npcName}] ${result.dialogue}`, "ai");
+          renderGateEffects(result.gateEffects, tr);
 
           state = result.state;
         } catch (err: any) {

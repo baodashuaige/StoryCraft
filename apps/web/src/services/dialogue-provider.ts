@@ -171,6 +171,10 @@ class ProxyProvider implements NarrativeProvider {
       });
     } catch (err) {
       clearTimeout(timeout);
+      this.consecutiveFailures++;
+      this.lastError = err instanceof Error ? err.message : String(err);
+      if (this.consecutiveFailures >= 3) this.state = "failed";
+      else this.state = "degraded";
       if ((err as Error).name === "AbortError") {
         throw new Error("AI request timed out after 12 seconds");
       }
