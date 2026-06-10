@@ -10,6 +10,8 @@ import { generateMapSvg } from "../map-renderer";
 import { showEnding } from "./end";
 // Import devlog to ensure window.__devlog is initialized
 import "../services/devlog";
+import { startSnow, stopSnow } from "../effects/snow";
+import { ROOM_IMAGE, NPC_IMAGE } from "../images";
 
 // --- Module state ---
 let pack: WorldPack;
@@ -51,7 +53,14 @@ export async function startGame(worldPack: WorldPack): Promise<void> {
   $("end-screen").classList.add("hidden");
   $("game").classList.remove("hidden");
 
+  startSnow();
+
   renderInitialScene();
+
+  // Move room-art into left-panel root so it acts as a full-bleed background
+  const leftPanel = $("left-panel");
+  leftPanel.insertBefore($("room-art"), leftPanel.firstChild);
+
   ($("command-input") as HTMLInputElement).focus();
 }
 
@@ -166,6 +175,7 @@ export async function executeAndRender(input: CommandInput): Promise<void> {
   renderVisibleState(result.visibleState);
 
   if (result.state.isComplete && result.state.endingId) {
+    stopSnow();
     setTimeout(
       () =>
         showEnding(
@@ -242,17 +252,6 @@ async function executeAiDialogue(npcId: string, playerInput: string): Promise<vo
     });
     state = result.state;
 
-    // --- Render error result (AI provider failed) ---
-    if (result.source === "error") {
-      const msgEn = "AI service temporarily unavailable. Please try again.";
-      const msgZh = "AI 服务暂时不可用，请重试。";
-      narHistory.push({ css: "fail", en: msgEn, zh: msgZh });
-      appendNar("fail", tr.lang === "zh" ? msgZh : msgEn);
-      renderDebugBlock(result);
-      renderVisibleState(result.visibleState);
-      return;
-    }
-
     // --- Render AI dialogue text ---
     const aiBadge = ' <span class="ai-badge" title="AI dialogue">✦</span>';
     narHistory.push({ css: "ok", en: result.dialogue, zh: result.dialogue, aiSource: "ai" });
@@ -305,7 +304,7 @@ async function executeAiDialogue(npcId: string, playerInput: string): Promise<vo
     // The AI dialogue IS the NPC voice; runtime blockedResponse is suppressed.
 
     // Render policy-decided trust delta (NOT raw AI trust)
-    if (result.trustDeltaApplied !== 0) {
+    if (result.trustDeltaApplied !== 0 && !result.gateEffects?.trustChange) {
       const newTrust = state.trustByNpcId[npcId] ?? 0;
       const trustMsg = `💚 ${tr.npc(npcId)} ${tr.lang === "zh" ? `信任度变为 ${newTrust}` : `trust is now ${newTrust}`}`;
       const trustEl = document.createElement("div");
@@ -318,6 +317,7 @@ async function executeAiDialogue(npcId: string, playerInput: string): Promise<vo
 
     // Check for game end
     if (result.isComplete && result.endingId) {
+      stopSnow();
       setTimeout(() => showEnding(tr, state, () => startGame(pack), () => startGame(pack)), 800);
     }
   } catch {
@@ -349,19 +349,13 @@ function setInputsDisabled(disabled: boolean): void {
  * Works for both AI success and error results. Click to expand/collapse.
  */
 function renderDebugBlock(result: DialogueServiceResult): void {
-  // --- Error path: show provider diagnostics ---
-  if (result.source === "error") {
+  // --- Provider-failure path: show error diagnostics ---
+  if (result.errorDiagnostics) {
     const diag = result.errorDiagnostics;
-    if (!diag) return;
-
-    const cooldownStr = diag.cooldownRemainingMs != null
-      ? `${Math.ceil(diag.cooldownRemainingMs / 1000)}s`
-      : "none";
 
     const headerText = [
       `ERROR │ reason: ${diag.reason}`,
       `provider: ${diag.providerState} │ failures: ${diag.consecutiveFailures}`,
-      `cooldown: ${cooldownStr}`,
       `last_error: ${diag.lastError ?? "(none)"}`,
     ].join(" │ ");
 
@@ -369,7 +363,6 @@ function renderDebugBlock(result: DialogueServiceResult): void {
       `reason: ${diag.reason}`,
       `provider_state: ${diag.providerState}`,
       `consecutive_failures: ${diag.consecutiveFailures}`,
-      `cooldown_remaining: ${cooldownStr}`,
       `last_error: ${diag.lastError ?? "(none)"}`,
       `model: ${result.model || "(unknown)"}`,
     ].join("\n");
@@ -416,129 +409,14 @@ function renderDebugBlock(result: DialogueServiceResult): void {
   $("narrative-log").appendChild(debugEl);
 }
 
-// --- Room ASCII Art ---
-const ROOM_ASCII: Record<string, string> = {
-  room_great_hall: [
-    "         ___           ___    ",
-    "        /   \\         /   \\   ",
-    "       /     \\_______/     \\  ",
-    "      /  ╔═══╗     ╔═══╗  \\  ",
-    "     /   ║   ║     ║   ║   \\ ",
-    "    /    ╚═══╝     ╚═══╝    \\",
-    "   /                          \\",
-    "  │   ┌──┐            ┌──┐   │",
-    "  │   │▒▒│    ┌───┐   │▒▒│   │",
-    "  │   └──┘    │☠  │   └──┘   │",
-    "  │           └───┘          │",
-    "  │  ╱╲     ╱╲      ╱╲     ╱╲",
-    "  │ ╱  ╲   ╱  ╲    ╱  ╲   ╱  ╲",
-    "  └──────────────────────────┘",
-  ].join("\n"),
-
-  room_study: [
-    "   ┌─────────────────────┐",
-    "   │  ┌─┐        ╔═══╗  │",
-    "   │  │░│  ┌──┐  ║   ║  │",
-    "   │  │░│  │📖│  ║ ░ ║  │",
-    "   │  └─┘  └──┘  ╚═╗═╝  │",
-    "   │   🔥        ╔═╝═╗  │",
-    "   │  ╱╲╱╲      ║ ░░░║  │",
-    "   │            ╚═════╝  │",
-    "   │   ┌─┬─┬─┐          │",
-    "   │   │▓│▓│▓│  ╱╲╱╲   │",
-    "   │   └─┴─┴─┘          │",
-    "   └─────────────────────┘",
-  ].join("\n"),
-
-  room_servants_hall: [
-    "  ┌──────────────────────┐",
-    "  │  ┌──┐ ┌──┐    ┌──┐  │",
-    "  │  │🧥│ │🧥│    │📋│  │",
-    "  │  └──┘ └──┘    └──┘  │",
-    "  │                      │",
-    "  │  ╔═══════╗  ◉  ◉  ◉ │",
-    "  │  ║   🔥  ║  ◉  ◉  ◉ │",
-    "  │  ╚═══════╝           │",
-    "  │   ╱╲╱╲╱╲    ┌─┬─┐   │",
-    "  │             │✎│✎│   │",
-    "  │   ╱╲╱╲╱╲    └─┴─┘   │",
-    "  └──────────────────────┘",
-  ].join("\n"),
-
-  room_bell_tower: [
-    "          ╱╲",
-    "         ╱  ╲",
-    "        ╱ 🔔 ╲",
-    "       ╱──────╲",
-    "      ╱    │   ╲",
-    "     ╱     │    ╲",
-    "    ╱   ┌──┼──┐  ╲",
-    "   │    │  ╱╲  │   │",
-    "   │    │ ╱  ╲ │   │",
-    "   │    │╱ ✦✦ ╲│   │",
-    "   │    └──────┘   │",
-    "   │      ╱╲       │",
-    "   │    ╱ ✦  ✦ ╲    │",
-    "   │  ╱──────────╲  │",
-    "   └───────────────┘",
-  ].join("\n"),
-
-  room_winter_garden: [
-    "   ╔═══════════════════════╗",
-    "   ║ ╱╲   ╱╲   ╱╲   ╱╲  ║",
-    "   ╱  ❄   ❄   ❄   ❄  ╲ ║",
-    "  ╱  ╱╲ ╱╲ ╱╲ ╱╲ ╱╲ ╱╲  ╲║",
-    "  │ 🌿❄🌿❄🌿❄🌿❄🌿❄🌿 │║",
-    "  │  ╲╱ ╲╱ ╲╱ ╲╱ ╲╱ ╲╱  │║",
-    "  │    ❄   ❄   ❄   ❄    │║",
-    "  │  ╱╲ ╱╲ ╱╲ ╱╲ ╱╲ ╱╲  │║",
-    "  │ 🌿❄🌿❄🌿❄🌿❄🌿❄🌿 │║",
-    "  │  ╲╱ ╲╱ ╲╱ ╲╱ ╲╱ ╲╱  │",
-    "  │    ❄   ❄   ❄   ❄    │",
-    "  ╚═══════════════════════╝",
-  ].join("\n"),
-
-  room_coach_yard: [
-    "       ❄  ❄    ❄     ❄  ",
-    "      ❄    ❄  ❄   ❄     ",
-    "    ┌─────┐    ┌─────┐   ",
-    "    │ 🛷  │    │ 🛷  │   ",
-    "    │░░░░░│    │░░░░░│   ",
-    "    └──┬──┘    └──┬──┘   ",
-    "   ╱╲  │  ╱╲      │  ╱╲  ",
-    "  ╱░░╲ │ ╱░░╲  ╱╲ │ ╱░░╲ ",
-    "  ╲░░░╱└─╲░░░╱ ╱╲╱╲└╲░░░╱ ",
-    "   ╲░░╱   ╲░░╱╱ 🏮 ╲╲░░╱  ",
-    "    ╲╱     ╲╱      ╲╱   ",
-    "     ❄  ❄     ❄  ❄      ",
-  ].join("\n"),
-
-  room_gatehouse: [
-    "           ┌─┐",
-    "           │⚑│",
-    "           └┬┘",
-    "        ┌───┼───┐",
-    "        │   │   │",
-    "    ━━━━┫   │   ┣━━━━",
-    "        │   │   │",
-    "    ━━━━┫ 🚪│   ┣━━━━",
-    "        │   │   │",
-    "        └───┼───┘",
-    "       ╱ ╲  │  ╱ ╲",
-    "      ╱░░░╲ │ ╱░░░╲",
-    "     ╱░░░░░╲│╱░░░░░╲",
-    "    ╱░░░░░░░░░░░░░░░╲",
-    "         ❄  ❄  ❄     ",
-  ].join("\n"),
-};
-
-function renderRoomArt(roomId: string): void {
+// --- Room illustration (replaces ASCII art) ---
+function renderRoomImage(roomId: string): void {
   const el = $("room-art");
-  const art = ROOM_ASCII[roomId];
-  if (art) {
-    el.textContent = art;
+  const src = ROOM_IMAGE[roomId];
+  if (src) {
+    el.innerHTML = `<img src="${src}" alt="" class="room-illustration" />`;
   } else {
-    el.textContent = "";
+    el.innerHTML = "";
   }
 }
 
@@ -563,7 +441,7 @@ export function renderVisibleState(v: VisibleState): void {
   $("room-display").textContent = tr.room(v.currentRoom.id);
   $("room-name").textContent = tr.room(v.currentRoom.id);
   $("room-description").textContent = tr.roomDesc(v.currentRoom.id);
-  renderRoomArt(v.currentRoom.id);
+  renderRoomImage(v.currentRoom.id);
   $("room-exits").innerHTML =
     v.visibleExits.length > 0
       ? `<strong>${t("出口：", "Exits: ")}</strong>${v.visibleExits.map((e) => (e.locked ? `<span style="text-decoration:line-through">${esc(e.direction)}</span>` : esc(e.direction))).join(t("、", ", "))}`
@@ -611,6 +489,7 @@ function renderMap(): void {
       );
       if (exit) executeAndRender({ verb: "go", target: exit.aliases[0] });
     },
+    NPC_IMAGE,
   );
   container.innerHTML = "";
   container.appendChild(svg);
@@ -656,6 +535,15 @@ function renderNpcPanel(v: VisibleState): void {
     const nameSpan = document.createElement("div");
     nameSpan.className = "npc-name";
     nameSpan.textContent = `${tr.npc(npc.id)}（${tr.npcRole(npc.id)}）`;
+    // NPC portrait
+    const portraitSrc = NPC_IMAGE[npc.id];
+    if (portraitSrc) {
+      const portrait = document.createElement("img");
+      portrait.src = portraitSrc;
+      portrait.className = "npc-portrait";
+      portrait.alt = tr.npc(npc.id);
+      div.appendChild(portrait);
+    }
     div.appendChild(nameSpan);
 
     // Fixed topic buttons (shown when AI unavailable as fallback)

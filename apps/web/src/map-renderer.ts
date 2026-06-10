@@ -32,6 +32,7 @@ export function generateMapSvg(
   state: WorldState,
   roomNameFn: (roomId: string) => string,
   onRoomClick?: (roomId: string) => void,
+  npcImageMap?: Record<string, string>,
 ): SVGSVGElement {
   const rooms = adventure.rooms;
   const exits = adventure.exits;
@@ -203,16 +204,41 @@ export function generateMapSvg(
     svg.appendChild(g);
   }
 
-  // 8. Draw NPC dots (above the room rect)
-  for (const [, room] of Object.entries(state.npcRoomById)) {
+  // 8. Draw NPC portraits on the map
+  for (const [npcId, room] of Object.entries(state.npcRoomById)) {
     const node = nodes.get(room);
     if (!node) continue;
-    const c = document.createElementNS(SVG_NS, "circle");
-    c.setAttribute("cx", String(node.cx));
-    c.setAttribute("cy", String(node.cy - NODE_HEIGHT / 2 - 6));
-    c.setAttribute("r", "5");
-    c.classList.add("map-npc-dot");
-    svg.appendChild(c);
+    const imgSrc = npcImageMap?.[npcId];
+    if (imgSrc) {
+      const imgW = 20, imgH = 20;
+      const image = document.createElementNS(SVG_NS, "image");
+      image.setAttribute("x", String(node.cx - imgW / 2));
+      image.setAttribute("y", String(node.cy - NODE_HEIGHT / 2 - imgH - 4));
+      image.setAttribute("width", String(imgW));
+      image.setAttribute("height", String(imgH));
+      image.setAttribute("href", imgSrc);
+      image.setAttribute("preserveAspectRatio", "xMidYMid slice");
+      image.classList.add("map-npc-portrait");
+      // Clip to circle
+      const clipId = `npc-clip-${npcId}`;
+      const clip = document.createElementNS(SVG_NS, "clipPath");
+      clip.setAttribute("id", clipId);
+      const circ = document.createElementNS(SVG_NS, "circle");
+      circ.setAttribute("cx", String(node.cx));
+      circ.setAttribute("cy", String(node.cy - NODE_HEIGHT / 2 - imgH - 4 + imgH / 2));
+      circ.setAttribute("r", String(imgW / 2));
+      clip.appendChild(circ);
+      svg.appendChild(clip);
+      image.setAttribute("clip-path", `url(#${clipId})`);
+      svg.appendChild(image);
+    } else {
+      const c = document.createElementNS(SVG_NS, "circle");
+      c.setAttribute("cx", String(node.cx));
+      c.setAttribute("cy", String(node.cy - NODE_HEIGHT / 2 - 6));
+      c.setAttribute("r", "5");
+      c.classList.add("map-npc-dot");
+      svg.appendChild(c);
+    }
   }
 
   return svg;
