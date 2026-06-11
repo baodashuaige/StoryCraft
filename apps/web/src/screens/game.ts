@@ -21,7 +21,6 @@ function isMobile(): boolean {
 // --- Sidebar toggle (mobile) ---
 function initSidebar(): void {
   if (!isMobile()) return;
-  const toggle = document.getElementById("sidebar-toggle")!;
   const tab = document.getElementById("sidebar-tab")!;
   const overlay = document.getElementById("sidebar-overlay")!;
   const panel = document.getElementById("right-panel")!;
@@ -29,19 +28,15 @@ function initSidebar(): void {
   function open() {
     panel.classList.add("sidebar-open");
     overlay.classList.remove("hidden");
-    tab.textContent = "▶"; // ▶
+    tab.textContent = "▶";
   }
   function close() {
     panel.classList.remove("sidebar-open");
     overlay.classList.add("hidden");
-    tab.textContent = "◀"; // ◀
+    tab.textContent = "◀";
   }
 
-  toggle.style.display = "";
   tab.style.display = "";
-  toggle.addEventListener("click", () => {
-    if (panel.classList.contains("sidebar-open")) close(); else open();
-  });
   tab.addEventListener("click", () => {
     if (panel.classList.contains("sidebar-open")) close(); else open();
   });
