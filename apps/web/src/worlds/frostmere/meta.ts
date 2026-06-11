@@ -14,6 +14,7 @@ export const frostmereMeta: WorldMeta = {
   intro: {
     zh: "暴风雪之夜，庄园主人奥登·沃斯被发现死在钟楼之下。家中众人声称钟楼门从内部锁死。黎明时分，山路将被打通，嫌疑人将四散而去。你只有 8 个调查回合来揭开真相。",
     en: "You stand in the Great Hall of Frostmere House. A covered body lies near the stair. The tower door looms above the landing. Captain Rowan Vale watches you with impatient eyes.",
+  },
   help: {
     zh: "可以点击右侧地图和按钮操作，也可以输入命令：look, go, search, take, talk, use, inventory, accuse",
     en: "Click the map and buttons on the right, or type commands: look, go, search, take, talk, use, inventory, accuse",
@@ -50,4 +51,4 @@ export const frostmereMeta: WorldMeta = {
     room_bell_tower: ["item_cracked_bell_clapper"],
   },
 
-}};
+};
