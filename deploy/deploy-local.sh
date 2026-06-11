@@ -8,8 +8,7 @@ git commit -m "${1:-update}" || echo "[Deploy] No changes to commit"
 
 echo "[Deploy] Packing & uploading..."
 python -X utf8 -c "
-import paramiko, subprocess, os
-os.chdir(r'$(pwd)')
+import paramiko, subprocess
 # Pack current tree (no node_modules, no .git)
 r = subprocess.run(['git', 'archive', '--format=tar.gz', 'HEAD'], capture_output=True)
 print(f'Packed {len(r.stdout)} bytes')
