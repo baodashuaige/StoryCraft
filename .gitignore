@@ -33,3 +33,6 @@ __pycache__/
 data/
 saves/
 deploy.zip
+
+# Design docs (kept locally, not tracked in remote)
+docs/
