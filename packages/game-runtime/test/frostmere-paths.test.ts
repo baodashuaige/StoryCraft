@@ -27,7 +27,7 @@ describe("talk command", () => {
     assert.equal(result.ok, true);
     assert.equal(result.turnSpent, true);
     assert.equal(result.state.trustByNpcId["npc_mina_arlen"], 1);
-    assert.equal(result.state.turnsRemaining, 7);
+    assert.equal(result.state.turnsRemaining, 8);
   });
 
   it("talk to Mina about bell at trust 0 is blocked", () => {
@@ -94,7 +94,7 @@ describe("talk command", () => {
     assert.equal(result.ok, true);
     assert.equal(result.turnSpent, true);
     assert.ok(result.state.consequenceIds.includes("conseq_tipped_off_theo"));
-    assert.equal(result.state.npcRoomById["npc_theo_rusk"], "room_gatehouse");
+    assert.equal(result.state.npcRoomById["npc_theo_rusk"], "room_great_hall");
   });
 
   it("trust clamps at 2 maximum", () => {
@@ -289,8 +289,8 @@ describe("formal success route (Ending A)", () => {
     state = run(state, cmd("take", { target: "laudanum" })).state;
 
     // We now have 6 clues at standard (watch, bell, motive, route, drugged, staged)
-    // Turns remaining = 0, but let's verify: started at 8, spent 8 meaningful turns
-    assert.equal(state.turnsRemaining, 0);
+    // Turns remaining = 1, started at 9, spent 8 meaningful turns
+    assert.equal(state.turnsRemaining, 1);
 
     // Since we spent all turns, dawn should have triggered
     // Actually, let's recount: turn 1 (body), turn 2 (mina alden), turn 3 (mina bell),
@@ -539,7 +539,7 @@ describe("mercy route (Ending C)", () => {
     // turn 5: use ledger on theo -> tip-off + Theo moves to gatehouse
     state = run(state, cmd("use", { item: "ledger page", target: "theo" })).state;
     assert.ok(state.consequenceIds.includes("conseq_tipped_off_theo"));
-    assert.equal(state.npcRoomById["npc_theo_rusk"], "room_gatehouse");
+    assert.equal(state.npcRoomById["npc_theo_rusk"], "room_great_hall");
 
     // navigate to winter garden
     state = run(state, cmd("go", { target: "great hall" })).state;
@@ -555,11 +555,8 @@ describe("mercy route (Ending C)", () => {
     // turn 7: search clapper mount -> staged
     state = run(state, cmd("search", { target: "clapper mount" })).state;
 
-    // navigate to gatehouse
+    // navigate to great hall where Theo is
     state = run(state, cmd("go", { target: "great hall" })).state;
-    state = run(state, cmd("go", { target: "winter garden" })).state;
-    state = run(state, cmd("go", { target: "coach yard" })).state;
-    state = run(state, cmd("go", { target: "gatehouse" })).state;
 
     // Verify we have 4+ clues: watch, motive, route, staged = 4
     const stdClues = Object.values(state.discoveredCluesById).filter(
@@ -567,7 +564,7 @@ describe("mercy route (Ending C)", () => {
     );
     assert.ok(stdClues.length >= 4, `Expected 4+ clues but got ${stdClues.length}`);
 
-    // turn 8: accuse theo mercy at gatehouse -> Ending C
+    // turn 8: accuse theo mercy at great hall -> Ending C
     const result = run(state, cmd("accuse", { npc: "theo", mode: "mercy" }));
     assert.equal(result.ok, true);
     assert.equal(result.state.endingId, "ending_apprentice_confession");

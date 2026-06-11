@@ -25,7 +25,7 @@ test("initial visible state is in the Great Hall", () => {
 
   assert.equal(visibleState.currentRoom.id, "room_great_hall");
   assert.equal(visibleState.currentRoom.name, "Great Hall");
-  assert.equal(visibleState.turnsRemaining, 8);
+  assert.equal(visibleState.turnsRemaining, 9);
   assert.deepEqual(
     visibleState.presentNpcs.map((npc) => npc.id),
     ["npc_captain_vale"]
@@ -41,7 +41,7 @@ test("look does not consume an investigation turn", () => {
 
   assert.equal(result.ok, true);
   assert.equal(result.turnSpent, false);
-  assert.equal(result.state.turnsRemaining, 8);
+  assert.equal(result.state.turnsRemaining, 9);
   assert.equal(result.state.turnIndex, 0);
   assert.equal(result.state.currentRoomId, "room_great_hall");
   assert.equal(result.events[0].type, "looked");
@@ -53,7 +53,7 @@ test("inventory starts empty and does not consume an investigation turn", () => 
 
   assert.equal(result.ok, true);
   assert.equal(result.turnSpent, false);
-  assert.equal(result.state.turnsRemaining, 8);
+  assert.equal(result.state.turnsRemaining, 9);
   assert.deepEqual(result.visibleState.inventory, []);
   assert.match(result.message, /carrying nothing/i);
 });
@@ -64,7 +64,7 @@ test("go to a valid exit changes room without consuming an investigation turn", 
 
   assert.equal(result.ok, true);
   assert.equal(result.turnSpent, false);
-  assert.equal(result.state.turnsRemaining, 8);
+  assert.equal(result.state.turnsRemaining, 9);
   assert.equal(result.state.turnIndex, 0);
   assert.equal(result.state.currentRoomId, "room_study");
   assert.deepEqual(result.state.visitedRoomIds, [
@@ -80,7 +80,7 @@ test("go to an invalid exit fails without changing room", () => {
 
   assert.equal(result.ok, false);
   assert.equal(result.turnSpent, false);
-  assert.equal(result.state.turnsRemaining, 8);
+  assert.equal(result.state.turnsRemaining, 9);
   assert.equal(result.state.currentRoomId, "room_great_hall");
   assert.deepEqual(result.state.visitedRoomIds, ["room_great_hall"]);
   assert.equal(result.events[0].type, "command_rejected");

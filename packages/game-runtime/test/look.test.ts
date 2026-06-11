@@ -81,12 +81,12 @@ describe("look command — different rooms", () => {
     assert.ok(result.message.includes("outer gate creaks"));
   });
 
-  it("look after NPC moves (Theo to Gatehouse) shows updated NPC presence", () => {
+  it("look after NPC moves (Theo to Great Hall) shows updated NPC presence", () => {
     const state = {
       ...s(),
-      currentRoomId: "room_gatehouse",
-      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_gatehouse"],
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      currentRoomId: "room_great_hall",
+      visitedRoomIds: ["room_great_hall"],
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_great_hall" }
     };
     const result = run(state, cmd("look"));
     assert.match(result.message, /Present:/i);

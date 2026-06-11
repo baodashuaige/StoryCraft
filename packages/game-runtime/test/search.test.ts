@@ -10,7 +10,7 @@ test("searching a valid current-room target discovers a clue and spends one turn
   assert.equal(result.ok, true);
   assert.equal(result.turnSpent, true);
   assert.equal(result.state.turnIndex, 1);
-  assert.equal(result.state.turnsRemaining, 7);
+  assert.equal(result.state.turnsRemaining, 8);
   assert.equal(result.state.currentRoomId, "room_great_hall");
   assert.equal(
     result.state.discoveredCluesById.clue_watch_stopped_1147,
@@ -33,7 +33,7 @@ test("repeating the same search does not spend another turn or change clue state
   assert.equal(second.ok, true);
   assert.equal(second.turnSpent, false);
   assert.equal(second.state.turnIndex, 1);
-  assert.equal(second.state.turnsRemaining, 7);
+  assert.equal(second.state.turnsRemaining, 8);
   assert.deepEqual(second.state.discoveredCluesById, {
     clue_watch_stopped_1147: "standard"
   });
@@ -50,7 +50,7 @@ test("searching a missing target fails without spending a turn", () => {
   assert.equal(result.ok, false);
   assert.equal(result.turnSpent, false);
   assert.equal(result.state.turnIndex, 0);
-  assert.equal(result.state.turnsRemaining, 8);
+  assert.equal(result.state.turnsRemaining, 9);
   assert.deepEqual(result.state.discoveredCluesById, {});
   assert.deepEqual(result.state.searchedInteractiveIds, []);
 });
@@ -62,7 +62,7 @@ test("searching an interactive from another room fails", () => {
   assert.equal(result.ok, false);
   assert.equal(result.turnSpent, false);
   assert.equal(result.state.currentRoomId, "room_great_hall");
-  assert.equal(result.state.turnsRemaining, 8);
+  assert.equal(result.state.turnsRemaining, 9);
   assert.deepEqual(result.state.discoveredCluesById, {});
 });
 

@@ -131,17 +131,17 @@ export function stateAtBellTower(): WorldState {
 export function stateAtGatehouse(): WorldState {
   return {
     ...createInitialState(),
-    currentRoomId: "room_gatehouse" as RoomId,
+    currentRoomId: "room_great_hall" as RoomId,
     visitedRoomIds: [
       "room_great_hall",
       "room_winter_garden",
       "room_coach_yard",
-      "room_gatehouse"
+      "room_great_hall"
     ] as RoomId[],
     consequenceIds: ["conseq_tipped_off_theo" as ConsequenceId],
     npcRoomById: {
       ...createInitialState().npcRoomById,
-      npc_theo_rusk: "room_gatehouse" as RoomId
+      npc_theo_rusk: "room_great_hall" as RoomId
     }
   };
 }

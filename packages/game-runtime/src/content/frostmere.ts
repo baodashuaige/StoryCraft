@@ -5,7 +5,7 @@ export const frostmereAdventure: AdventureDefinition = {
     id: "adv_frostmere_house",
     title: "The Last Bell at Frostmere House",
     initialRoomId: "room_great_hall",
-    initialTurnsRemaining: 8
+    initialTurnsRemaining: 9
   },
   rooms: {
     room_great_hall: {
@@ -648,10 +648,10 @@ export const frostmereAdventure: AdventureDefinition = {
       blockedResponse:
         "Theo fidgets with his cuffs. 'I do not know what you mean.'",
       response:
-        "Theo's face drains of color when he sees the gloves. 'Where did you — those could belong to anyone. The workshops are always sooty.' He takes a step back. 'I need some air. I'll be at the gatehouse.'",
+        "Theo's face drains of color when he sees the gloves. 'Where did you — those could belong to anyone. The workshops are always sooty.' He takes a step back. 'I need some air. I'll be in the Great Hall.'",
       repeatedResponse: "Theo avoids your gaze. 'I have nothing more to say about those.'",
       consequenceIds: ["conseq_tipped_off_theo"],
-      movesNpcToRoomId: "room_gatehouse"
+      movesNpcToRoomId: "room_great_hall"
     },
     topic_theo_ledger: {
       id: "topic_theo_ledger",
@@ -664,11 +664,11 @@ export const frostmereAdventure: AdventureDefinition = {
       blockedResponse:
         "Theo looks puzzled. 'What ledger? I keep my notes in the workshop.'",
       response:
-        "Theo freezes when he sees the torn page. 'He was going to sell them. My designs — he was going to sell them and send me away.' His voice cracks. 'I need to leave. I'll wait at the gatehouse.'",
+        "Theo freezes when he sees the torn page. 'He was going to sell them. My designs — he was going to sell them and send me away.' His voice cracks. 'I need to leave. I'll wait in the Great Hall.'",
       repeatedResponse:
         "Theo refuses to discuss the ledger further.",
       consequenceIds: ["conseq_tipped_off_theo"],
-      movesNpcToRoomId: "room_gatehouse"
+      movesNpcToRoomId: "room_great_hall"
     },
     topic_theo_mercy: {
       id: "topic_theo_mercy",
@@ -681,7 +681,7 @@ export const frostmereAdventure: AdventureDefinition = {
       blockedResponse:
         "Theo shakes his head. 'I do not know what you want from me.'",
       response:
-        "Theo slumps against the gatehouse wall. 'You know, don't you? About the designs — about everything.' He stares at the snow. 'He was going to throw my life away. I just... I wanted him to stop. I never meant for it to end like this.'",
+        "Theo slumps against the wall. 'You know, don't you? About the designs — about everything.' He stares at the floor. 'He was going to throw my life away. I just... I wanted him to stop. I never meant for it to end like this.'",
       repeatedResponse:
         "'I have told you everything. What happens now is up to you.'",
       flagChanges: { theo_confessed: true }
@@ -747,7 +747,7 @@ export const frostmereAdventure: AdventureDefinition = {
       ],
       blockedResponse: "Theo is not here to speak with.",
       response:
-        "Theo goes pale when you show him the ledger page. 'He was selling my work — my life's work!' He backs away. 'I need to leave. I'll be at the gatehouse.'",
+        "Theo goes pale when you show him the ledger page. 'He was selling my work — my life's work!' He backs away. 'I need to leave. I'll be in the Great Hall.'",
       consequenceIds: ["conseq_tipped_off_theo"],
       npcPresent: "npc_theo_rusk",
       flagChanges: {}
@@ -761,14 +761,14 @@ export const frostmereAdventure: AdventureDefinition = {
       ],
       blockedResponse: "Theo is not here to speak with.",
       response:
-        "Theo stares at the soot-stained gloves. 'Those are not — anyone could have...' He cannot finish the sentence. 'I need air. I'll be at the gatehouse.'",
+        "Theo stares at the soot-stained gloves. 'Those are not — anyone could have...' He cannot finish the sentence. 'I need air. I'll be in the Great Hall.'",
       consequenceIds: ["conseq_tipped_off_theo"],
       npcPresent: "npc_theo_rusk",
       flagChanges: {}
     }
   },
   endings: {
-    // Priority 1: Best ending — private mercy confession at gatehouse
+    // Priority 1: Best ending — private mercy confession in Great Hall
     ending_apprentice_confession: {
       id: "ending_apprentice_confession",
       title: "The Apprentice's Confession",
@@ -784,7 +784,7 @@ export const frostmereAdventure: AdventureDefinition = {
       ],
       requiresNpcId: "npc_theo_rusk",
       requiresMode: "mercy",
-      requiresRoomId: "room_gatehouse",
+      requiresRoomId: "room_great_hall",
       consequenceIds: ["conseq_offered_theo_mercy"]
     },
     // Priority 2: Good ending — formal arrest with full evidence

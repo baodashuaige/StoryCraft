@@ -7,7 +7,7 @@ import type { EvidenceStrength } from "../../shared/src";
 describe("accuse command — basic mechanics", () => {
   it("spends one investigation turn", () => {
     const result = run(s(), cmd("accuse", { npc: "mina" }));
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
   });
 
   it("records conseq_made_public_accusation for public mode", () => {
@@ -57,8 +57,8 @@ describe("accuse command — ending outcomes", () => {
   it("Ending C (Apprentice Confession): mercy Theo at Gatehouse with 4+ clues + tipped off", () => {
     const state = {
       ...s(),
-      currentRoomId: "room_gatehouse",
-      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_gatehouse"],
+      currentRoomId: "room_great_hall",
+      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_great_hall"],
       discoveredCluesById: {
         clue_watch_stopped_1147: "standard",
         clue_stolen_design_motive: "standard",
@@ -67,7 +67,7 @@ describe("accuse command — ending outcomes", () => {
         clue_soot_marked_garden_route: "standard"
       } as Record<string, EvidenceStrength>,
       consequenceIds: ["conseq_tipped_off_theo"],
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_great_hall" }
     };
     const result = run(state, cmd("accuse", { npc: "theo", mode: "mercy" }));
     assert.equal(result.state.endingId, "ending_apprentice_confession");
@@ -181,10 +181,10 @@ describe("accuse command — edge cases", () => {
   });
 
   it("mercy mode in wrong room does not reach Apprentice Confession", () => {
-    // Mercy at great hall (not gatehouse) → falls through
+    // Mercy at study (not Great Hall) → falls through
     const state = {
       ...s(),
-      currentRoomId: "room_great_hall",
+      currentRoomId: "room_study",
       discoveredCluesById: {
         clue_watch_stopped_1147: "standard",
         clue_stolen_design_motive: "standard",
@@ -194,7 +194,7 @@ describe("accuse command — edge cases", () => {
       consequenceIds: ["conseq_tipped_off_theo"]
     };
     const result = run(state, cmd("accuse", { npc: "theo", mode: "mercy" }));
-    // mercy requires gatehouse, so it won't match. Falls to snow_covers_tracks
+    // mercy requires great hall, so it won't match. Falls to snow_covers_tracks
     // (no public accusation consequence since mode is mercy)
     assert.notEqual(result.state.endingId, "ending_apprentice_confession");
   });
