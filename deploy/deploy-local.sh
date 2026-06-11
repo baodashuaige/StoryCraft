@@ -19,7 +19,7 @@ ssh.connect('118.31.34.132', username='root', password='D0ushiji@xi@ng', timeout
 sftp = ssh.open_sftp()
 sftp.putfo(__import__('io').BytesIO(r.stdout), '/tmp/storycraft-deploy.tar.gz')
 sftp.close()
-stdin, stdout, stderr = ssh.exec_command('cd /opt/storycraft-game && tar xzf /tmp/storycraft-deploy.tar.gz && bash deploy/deploy.sh', timeout=120)
+stdin, stdout, stderr = ssh.exec_command('cd /opt/storycraft-game && tar xzf /tmp/storycraft-deploy.tar.gz && sed -i "s/\\r//" deploy/*.sh && bash deploy/deploy.sh', timeout=120)
 out = stdout.read().decode('utf-8', errors='replace')
 err = stderr.read().decode('utf-8', errors='replace')
 if out: print(out)
