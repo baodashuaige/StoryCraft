@@ -440,11 +440,25 @@ body::after {
 #ending-consequences { margin: 1rem 0; font-size: 0.85rem; color: var(--text-secondary); }
 #ending-consequences li { list-style: none; padding: 0.12rem 0; }
 
-/* ── Sidebar overlay (mobile only, hidden on desktop) ── */
+/* ── Sidebar tab & overlay (mobile only) ── */
 .sidebar-overlay { display: none; }
+#sidebar-tab { display: none; }
 @media (max-width: 768px) {
   .sidebar-overlay { display: block; }
   .sidebar-overlay.hidden { display: none; }
+
+  /* Floating tab on right edge */
+  #sidebar-tab {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+    z-index: 198; width: 28px; height: 72px;
+    background: var(--btn-bg); color: var(--text-accent);
+    border: 1px solid var(--border-strong); border-right: none;
+    border-radius: 6px 0 0 6px; font-size: 0.8rem; cursor: pointer;
+    transition: all 0.25s; opacity: 0.7;
+    font-family: inherit;
+  }
+  #sidebar-tab:hover { opacity: 1; background: var(--btn-hover); }
 }
 
 /* ── Responsive (mobile ≤ 768px) ─────────────────────── */
