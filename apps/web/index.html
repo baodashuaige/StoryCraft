@@ -47,6 +47,7 @@
       <button id="user-btn-game" style="width:10px;height:10px;border-radius:50%;border:none;background:#4a5568;cursor:pointer;padding:0;margin-left:0.3rem" title="用户"></button>
       <button id="lang-toggle-game" style="width:10px;height:10px;border-radius:50%;border:none;background:#4a5568;cursor:pointer;padding:0;margin-left:0.3rem" title="语言"></button>
       <button id="settings-btn-game" style="width:10px;height:10px;border-radius:50%;border:none;background:#4a5568;cursor:pointer;padding:0;margin-left:0.3rem" title="设置"></button>
+      <button id="sidebar-toggle" style="display:none;width:28px;height:28px;border:none;background:var(--btn-bg);color:var(--text-accent);font-size:1rem;cursor:pointer;border-radius:3px;margin-left:0.3rem;line-height:1" title="面板">☰</button>
       <span id="config-badge" style="display:none"></span>
     </header>
 
@@ -62,6 +63,10 @@
 
         <section id="narrative-panel">
           <div id="narrative-log"></div>
+        </section>
+
+        <section id="npc-panel-inline" style="display:none">
+          <div id="npc-list-inline"></div>
         </section>
 
         <div id="command-bar">
@@ -118,6 +123,9 @@
       </aside>
     </div>
   </div>
+
+  <!-- 移动端侧栏遮罩 -->
+  <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
 
   <!-- AI 设置弹窗 (no auth — that's separate) -->
   <div id="settings-modal" class="overlay hidden" style="background:rgba(0,0,0,0.6)">

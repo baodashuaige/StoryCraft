@@ -437,10 +437,94 @@ body::after {
 #ending-consequences { margin: 1rem 0; font-size: 0.85rem; color: var(--text-secondary); }
 #ending-consequences li { list-style: none; padding: 0.12rem 0; }
 
-/* ── Responsive ────────────────────────────────────────── */
+/* ── Sidebar overlay (mobile only, hidden on desktop) ── */
+.sidebar-overlay { display: none; }
 @media (max-width: 768px) {
+  .sidebar-overlay { display: block; }
+  .sidebar-overlay.hidden { display: none; }
+}
+
+/* ── Responsive (mobile ≤ 768px) ─────────────────────── */
+@media (max-width: 768px) {
+  /* Layout: stack vertically, hide sidebar by default */
   #main-layout { flex-direction: column; }
-  #right-panel { width: 100%; border-left: none; border-top: 1px solid var(--border); max-height: 42vh; }
+
+  /* Right panel → slide-in drawer */
+  #right-panel {
+    position: fixed; top: 0; right: 0; width: 85%; max-width: 320px; height: 100%;
+    z-index: 201; overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.25s ease-out;
+    background: var(--bg-dark);
+    border-left: 1px solid var(--border-strong);
+    box-shadow: -4px 0 30px rgba(0,0,0,0.5);
+  }
+  #right-panel.sidebar-open { transform: translateX(0); }
+
+  /* Overlay */
+  .sidebar-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5);
+    transition: opacity 0.25s;
+  }
+  .sidebar-overlay.hidden { display: none; }
+
+  /* Show sidebar toggle */
+  #sidebar-toggle { display: inline-block !important; }
+
+  /* NPC inline panel (between narrative and command bar) */
+  #npc-panel-inline {
+    display: block;
+    border-top: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    max-height: 30vh; overflow-y: auto;
+    background: var(--card-bg);
+  }
+  #npc-panel-inline .npc-entry {
+    display: inline-block; vertical-align: top;
+    margin-right: 0.5rem; margin-bottom: 0.3rem;
+  }
+
+  /* Smaller NPC portraits on mobile */
+  .npc-portrait-mobile {
+    display: block;
+    width: 70px; height: 105px;
+    object-fit: cover; object-position: top center;
+    border-radius: 2px; margin-bottom: 0.2rem;
+    border: 1px solid var(--border);
+    opacity: 0.85;
+  }
+
+  /* Hide desktop NPC section on mobile (inline panel replaces it) */
+  #npc-section { display: none; }
+
+  /* Narrative: flexible space */
+  #narrative-panel { flex: 1; min-height: 20vh; }
+
+  /* Scene panel: compact */
+  #scene-panel { padding: 0.6rem 0.75rem; }
+  #room-name { font-size: 1.2rem; }
+  #room-description { font-size: 0.82rem; }
+
+  /* Status bar */
+  #status-bar { padding: 0.3rem 0.75rem; font-size: 0.75rem; }
+
+  /* Touch-friendly sizing */
+  .action-btn, .topic-btn, .accuse-btn {
+    min-height: 34px; min-width: 44px;
+    font-size: 0.75rem; padding: 0.3rem 0.6rem;
+  }
+  #command-submit { min-height: 44px; min-width: 44px; font-size: 1.2rem; }
+  #command-input { font-size: 1rem; padding: 0.6rem 0.5rem 0.6rem 1.5rem; }
+  .npc-select { font-size: 0.85rem; padding: 0.3rem 0.5rem; }
+
+  /* Remove tap delay */
+  button, a, .map-room {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Overlays */
   .overlay-content h1 { font-size: 1.5rem; }
   .lobby-container { padding: 1rem; }
   .lobby-grid { grid-template-columns: 1fr; }
