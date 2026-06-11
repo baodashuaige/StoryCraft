@@ -120,7 +120,7 @@ body::after {
 #game { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 #game:not(.hidden) { display: flex; }
 #main-layout { display: flex; flex: 1; min-height: 0; }
-#left-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+#left-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
 #right-panel {
   width: 290px;
   background: var(--card-bg);
@@ -144,7 +144,7 @@ body::after {
 #scene-panel {
   padding: 1.25rem 1.5rem 0.75rem;
   border-bottom: 1px solid var(--border);
-  position: relative;
+  position: relative; flex-shrink: 0;
 }
 #scene-panel::before {
   content: "";
@@ -271,7 +271,7 @@ body::after {
 /* ── Command bar (investigation journal) ───────────────── */
 #command-bar {
   display: flex; border-top: 1px solid var(--border); position: relative;
-  background: var(--bg-panel);
+  background: var(--bg-panel); flex-shrink: 0;
 }
 #command-bar::before {
   content: "§";
@@ -477,7 +477,7 @@ body::after {
 
   /* NPC inline panel (between narrative and command bar) */
   #npc-panel-inline {
-    display: block;
+    display: block; flex-shrink: 0;
     border-top: 1px solid var(--border);
     padding: 0.5rem 0.75rem;
     max-height: 30vh; overflow-y: auto;
