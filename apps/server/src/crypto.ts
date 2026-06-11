@@ -1,13 +1,41 @@
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const ALGO = "aes-256-gcm";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ENV_PATH = path.resolve(__dirname, "../../../.env");
+
+let _key: Buffer | null = null;
+
 function getKey(): Buffer {
+  if (_key) return _key;
+
   const hex = process.env.ENCRYPTION_KEY;
-  if (!hex || hex.length !== 64) {
-    throw new Error("ENCRYPTION_KEY must be 64 hex chars (32 bytes). Run: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"");
+  if (hex && hex.length === 64) {
+    _key = Buffer.from(hex, "hex");
+    return _key;
   }
-  return Buffer.from(hex, "hex");
+
+  // Auto-generate and persist to .env
+  const generated = randomBytes(32).toString("hex");
+  console.log(`[Crypto] ENCRYPTION_KEY not set. Auto-generating and saving to .env`);
+
+  let envContent = "";
+  if (fs.existsSync(ENV_PATH)) {
+    envContent = fs.readFileSync(ENV_PATH, "utf-8");
+  }
+  // Remove old line if present, then append
+  envContent = envContent.replace(/^ENCRYPTION_KEY=.*\n?/m, "");
+  if (!envContent.endsWith("\n") && envContent.length > 0) envContent += "\n";
+  envContent += `ENCRYPTION_KEY=${generated}\n`;
+  fs.writeFileSync(ENV_PATH, envContent, "utf-8");
+
+  process.env.ENCRYPTION_KEY = generated;
+  _key = Buffer.from(generated, "hex");
+  return _key;
 }
 
 export function encrypt(text: string): string {

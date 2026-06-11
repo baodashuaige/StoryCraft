@@ -1,10 +1,40 @@
 import jwt from "jsonwebtoken";
 import type express from "express";
+import { randomBytes } from "crypto";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const JWT_SECRET = () => {
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ENV_PATH = path.resolve(__dirname, "../../../.env");
+
+let _secret: string | null = null;
+
+const JWT_SECRET = (): string => {
+  if (_secret) return _secret;
+
   const secret = process.env.JWT_SECRET;
-  if (!secret) throw new Error("JWT_SECRET env var is required. Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\"");
-  return secret;
+  if (secret && secret.length >= 32) {
+    _secret = secret;
+    return secret;
+  }
+
+  // Auto-generate and persist
+  const generated = randomBytes(32).toString("hex");
+  console.log(`[Auth] JWT_SECRET not set. Auto-generating and saving to .env`);
+
+  let envContent = "";
+  if (fs.existsSync(ENV_PATH)) {
+    envContent = fs.readFileSync(ENV_PATH, "utf-8");
+  }
+  envContent = envContent.replace(/^JWT_SECRET=.*\n?/m, "");
+  if (!envContent.endsWith("\n") && envContent.length > 0) envContent += "\n";
+  envContent += `JWT_SECRET=${generated}\n`;
+  fs.writeFileSync(ENV_PATH, envContent, "utf-8");
+
+  process.env.JWT_SECRET = generated;
+  _secret = generated;
+  return generated;
 };
 
 export interface AuthPayload {

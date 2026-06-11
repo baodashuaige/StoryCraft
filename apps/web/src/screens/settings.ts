@@ -8,8 +8,14 @@ let pendingMode: NarrationMode;
 let pendingSource: "host" | "custom";
 
 // ─── Shared button styles ───────────────────────────────────────────
-const activeStyle = "flex:1;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-highlight);border:2px solid var(--text-highlight);font-family:inherit;font-weight:bold;cursor:pointer;border-radius:3px";
-const inactiveStyle = "flex:1;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px";
+function setActive(btn: HTMLElement): void {
+  btn.className = "toggle-btn toggle-btn-active";
+  btn.style.flex = "1";
+}
+function setInactive(btn: HTMLElement): void {
+  btn.className = "toggle-btn";
+  btn.style.flex = "1";
+}
 
 // ─── Init ───────────────────────────────────────────────────────────
 export function initSettings(): void {
@@ -58,13 +64,13 @@ function renderMode(mode: NarrationMode): void {
   const configEl = document.getElementById("settings-smart-config") as HTMLElement;
 
   if (mode === "normal") {
-    normalBtn.style.cssText = activeStyle;
-    smartBtn.style.cssText = inactiveStyle;
+    setActive(normalBtn);
+    setInactive(smartBtn);
     descEl.textContent = t("普通模式：NPC 通过固定话题按钮对话，不使用 AI。", "Normal mode: NPCs use fixed topic buttons, no AI.");
     configEl.style.display = "none";
   } else {
-    normalBtn.style.cssText = inactiveStyle;
-    smartBtn.style.cssText = activeStyle;
+    setInactive(normalBtn);
+    setActive(smartBtn);
     descEl.textContent = t("智能模式：NPC 由 AI 驱动自由对话。", "Smart mode: NPCs are driven by AI for free-form dialogue.");
     configEl.style.display = "";
     void renderSource();
@@ -90,8 +96,8 @@ async function renderSource(): Promise<void> {
 
   if (pendingSource === "host") {
     // Show host key info
-    srcEnvBtn.style.cssText = activeStyle;
-    srcCustomBtn.style.cssText = inactiveStyle;
+    setActive(srcEnvBtn);
+    setInactive(srcCustomBtn);
     envInfo.style.display = "";
 
     try {
@@ -111,8 +117,8 @@ async function renderSource(): Promise<void> {
       const statusEl = document.getElementById("settings-status") as HTMLElement;
       statusEl.textContent = t("房主摆了摆手，表示不用客气 ヽ(´ー`)ﾉ", "The host waves dismissively — no need to be polite ヽ(´ー`)ﾉ");
       pendingSource = "host";
-      srcEnvBtn.style.cssText = activeStyle;
-      srcCustomBtn.style.cssText = inactiveStyle;
+      setActive(srcEnvBtn);
+      setInactive(srcCustomBtn);
       envInfo.style.display = "";
       try {
         const config = await getKeyConfig();
@@ -122,8 +128,8 @@ async function renderSource(): Promise<void> {
       } catch { /* ignore */ }
     } else {
       // Logged in → show input fields
-      srcEnvBtn.style.cssText = inactiveStyle;
-      srcCustomBtn.style.cssText = activeStyle;
+      setInactive(srcEnvBtn);
+      setActive(srcCustomBtn);
       customFields.style.display = "";
     }
   }
@@ -205,8 +211,9 @@ async function saveSettings(): Promise<void> {
     try {
       await saveKeyConfig({ apiKey: key, baseUrl: base || "https://api.deepseek.com/v1", model: model || "deepseek-v4-pro" });
       statusEl.textContent = t("✓ 灵魂注入成功，NPC 睁开了眼睛 (◉◞◉)", "✓ Soul injection complete, NPCs opened their eyes (◉◞◉)");
-    } catch {
-      statusEl.textContent = t("✗ 灵魂注入失败，NPC 又闭上了眼…", "✗ Soul injection failed, NPCs closed their eyes again…");
+    } catch (err: any) {
+      console.error("[Settings] saveKeyConfig failed:", err);
+      statusEl.textContent = t(`✗ 保存失败：${err?.message ?? "未知错误"}`, `✗ Save failed: ${err?.message ?? "unknown error"}`);
     }
   }
 

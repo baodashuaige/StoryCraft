@@ -4,19 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StoryCraft</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='28' font-size='28'%3E🏰%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
   <!-- 大厅画面 -->
   <div id="lobby-screen" class="overlay">
     <div class="lobby-container">
-      <div style="position:absolute;top:0.8rem;right:0.8rem;display:flex;gap:0.4rem;align-items:center;z-index:10">
-        <span id="user-badge-lobby" style="font-size:0.75rem;color:var(--text-secondary);margin-right:0.2rem">游客</span>
+      <div class="lobby-top-bar">
+        <span id="user-badge-lobby" class="badge-text">游客</span>
         <button id="user-btn-lobby" class="lang-btn-sm" title="登录">👤</button>
         <button id="lang-toggle-lobby" class="lang-btn-sm" title="Switch language">EN</button>
         <button id="settings-btn-lobby" class="lang-btn-sm" title="AI 设置">⚙️</button>
       </div>
-      <h1 class="lobby-title">🏰 StoryCraft</h1>
+      <h1 class="lobby-title">StoryCraft</h1>
       <p class="lobby-subtitle">探索不同的世界，揭开隐藏的真相</p>
       <div id="lobby-grid" class="lobby-grid">
         <!-- World cards rendered by JS -->
@@ -30,7 +34,7 @@
       <h1 id="ending-title"></h1>
       <p id="ending-summary"></p>
       <div id="ending-consequences"></div>
-      <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1rem">
+      <div class="btn-row">
         <button id="restart-btn" class="btn-primary">再来一次</button>
         <button id="back-to-lobby-btn" class="btn-primary btn-secondary">返回大厅</button>
       </div>
@@ -64,7 +68,7 @@
           <div id="narrative-log"></div>
         </section>
 
-        <section id="npc-panel-inline" style="display:none">
+        <section id="npc-panel-inline" class="hidden">
           <div id="npc-list-inline"></div>
         </section>
 
@@ -78,7 +82,7 @@
       <aside id="right-panel">
         <!-- 地图 (dynamic) -->
         <section id="map-section">
-          <h3 id="map-heading">🗺️ 地图</h3>
+          <h3 id="map-heading">地图</h3>
           <div id="map-body">
             <!-- SVG map generated dynamically by map-renderer.ts -->
           </div>
@@ -86,37 +90,37 @@
 
         <!-- NPC -->
         <section id="npc-section">
-          <h3 id="npc-heading">👤 在场人物</h3>
+          <h3 id="npc-heading">在场人物</h3>
           <div id="npc-list"></div>
         </section>
 
         <!-- 场景物品 -->
         <section id="scene-items-section">
-          <h3 id="scene-heading">🔍 场景</h3>
+          <h3 id="scene-heading">场景</h3>
           <div id="scene-items-list"></div>
         </section>
 
         <!-- 物品栏 -->
         <section id="inventory-section">
-          <h3 id="inventory-heading">🎒 物品栏</h3>
+          <h3 id="inventory-heading">物品栏</h3>
           <ul id="inventory-list"></ul>
         </section>
 
         <!-- 线索 -->
         <section id="clues-section">
-          <h3 id="clues-heading">📋 线索</h3>
+          <h3 id="clues-heading">线索</h3>
           <ul id="clues-list"></ul>
         </section>
 
         <!-- 信任度 -->
         <section id="trust-section">
-          <h3 id="trust-heading">💬 信任度</h3>
+          <h3 id="trust-heading">信任度</h3>
           <div id="trust-list"></div>
         </section>
 
         <!-- 后果 -->
         <section id="consequences-section">
-          <h3 id="consequences-heading">⚠️ 后果</h3>
+          <h3 id="consequences-heading">后果</h3>
           <ul id="consequences-list"></ul>
         </section>
       </aside>
@@ -131,85 +135,85 @@
 
   <!-- AI 设置弹窗 (no auth — that's separate) -->
   <div id="settings-modal" class="overlay hidden">
-    <div class="overlay-content" style="text-align:left;width:420px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px">
+    <div class="modal-card" style="width:420px">
       <button id="settings-close" class="lang-btn" title="关闭">✕</button>
-      <h2 style="color:var(--text-highlight);margin-bottom:0.75rem" id="settings-title">AI 叙事设置</h2>
+      <h2 class="modal-title" id="settings-title">AI 叙事设置</h2>
 
       <!-- Mode toggle -->
-      <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem">
-        <button id="settings-mode-normal" style="flex:1;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">普通模式</button>
-        <button id="settings-mode-smart" style="flex:1;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">智能模式</button>
+      <div class="toggle-row">
+        <button id="settings-mode-normal" class="toggle-btn">普通模式</button>
+        <button id="settings-mode-smart" class="toggle-btn">智能模式</button>
       </div>
-      <p id="settings-mode-desc" style="margin-bottom:0.75rem;font-size:0.8rem;color:var(--text-secondary);min-height:1.6em"></p>
+      <p id="settings-mode-desc" class="modal-desc"></p>
 
       <!-- Smart mode config (hidden in normal mode) -->
       <div id="settings-smart-config">
         <!-- Config source toggle -->
-        <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem">
-          <button id="settings-src-env" style="flex:1;padding:0.35rem 0;font-size:0.8rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">用房主的</button>
-          <button id="settings-src-custom" style="flex:1;padding:0.35rem 0;font-size:0.8rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">用自己的</button>
+        <div class="toggle-row">
+          <button id="settings-src-env" class="toggle-btn toggle-btn-sm">用房主的</button>
+          <button id="settings-src-custom" class="toggle-btn toggle-btn-sm">用自己的</button>
         </div>
         <!-- Env/host key info (model name + test button) -->
-        <div id="settings-env-info" style="font-size:0.8rem;color:var(--text-secondary);padding:0.4rem 0;margin-bottom:0.5rem">
-          <div style="display:flex;justify-content:space-between;align-items:center">
+        <div id="settings-env-info" class="modal-env-info">
+          <div class="modal-env-row">
             <span id="settings-env-model"></span>
-            <button id="settings-test-btn" style="font-size:0.75rem;padding:0.2rem 0.6rem;background:var(--btn-bg);color:var(--text-accent);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">敲门试试</button>
+            <button id="settings-test-btn" class="modal-test-btn">敲门试试</button>
           </div>
         </div>
         <!-- Custom config fields (hidden when env is selected) -->
         <div id="settings-custom-fields">
-          <label style="display:block;margin-bottom:0.5rem;font-size:0.85rem;color:var(--text-secondary)">
+          <label class="modal-label">
             API Key
-            <input type="password" id="settings-api-key" placeholder="sk-..." style="display:block;width:100%;margin-top:0.2rem;padding:0.4rem 0.6rem;background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;font-size:0.9rem;outline:none" />
+            <input type="password" id="settings-api-key" class="modal-input" placeholder="sk-..." />
           </label>
-          <label style="display:block;margin-bottom:0.5rem;font-size:0.85rem;color:var(--text-secondary)">
+          <label class="modal-label">
             Base URL
-            <input type="text" id="settings-base-url" placeholder="https://api.deepseek.com" style="display:block;width:100%;margin-top:0.2rem;padding:0.4rem 0.6rem;background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;font-size:0.9rem;outline:none" />
+            <input type="text" id="settings-base-url" class="modal-input" placeholder="https://api.deepseek.com" />
           </label>
-          <label style="display:block;margin-bottom:0.75rem;font-size:0.85rem;color:var(--text-secondary)">
+          <label class="modal-label">
             Model
-            <input type="text" id="settings-model" placeholder="deepseek-v4-pro" style="display:block;width:100%;margin-top:0.2rem;padding:0.4rem 0.6rem;background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;font-size:0.9rem;outline:none" />
+            <input type="text" id="settings-model" class="modal-input" placeholder="deepseek-v4-pro" />
           </label>
         </div>
       </div>
 
-      <button id="settings-save" class="btn-primary" style="display:block;width:100%;padding:0.4rem 1.2rem;font-size:0.85rem;margin-top:0.5rem">保存</button>
-      <p id="settings-status" style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-secondary);min-height:1.2em"></p>
+      <button id="settings-save" class="btn-primary modal-save-btn">保存</button>
+      <p id="settings-status" class="modal-status"></p>
     </div>
   </div>
 
   <!-- 登录弹窗 (独立于设置) -->
   <div id="auth-modal" class="overlay hidden">
-    <div class="overlay-content" style="text-align:left;width:320px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px">
+    <div class="modal-card" style="width:320px">
       <button id="auth-close" class="lang-btn" title="关闭">✕</button>
       <!-- Guest state -->
       <div id="auth-guest">
-        <h2 style="color:var(--text-highlight);margin-bottom:0.75rem" id="auth-title">登录</h2>
-        <label style="display:block;margin-bottom:0.5rem;font-size:0.85rem;color:var(--text-secondary)">
+        <h2 class="modal-title" id="auth-title">登录</h2>
+        <label class="modal-label">
           用户名
-          <input type="text" id="auth-username" placeholder="username" style="display:block;width:100%;margin-top:0.2rem;padding:0.4rem 0.6rem;background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;font-size:0.9rem;outline:none;border-radius:3px" />
+          <input type="text" id="auth-username" class="modal-input" placeholder="username" />
         </label>
-        <label style="display:block;margin-bottom:0.75rem;font-size:0.85rem;color:var(--text-secondary)">
+        <label class="modal-label">
           密码
-          <input type="password" id="auth-password" placeholder="password" style="display:block;width:100%;margin-top:0.2rem;padding:0.4rem 0.6rem;background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;font-size:0.9rem;outline:none;border-radius:3px" />
+          <input type="password" id="auth-password" class="modal-input" placeholder="password" />
         </label>
-        <div style="display:flex;gap:0.4rem">
-          <button id="auth-login-btn" style="flex:1;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-highlight);border:1px solid var(--text-highlight);font-family:inherit;cursor:pointer;border-radius:3px">登录</button>
-          <button id="auth-register-btn" style="flex:1;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">注册</button>
+        <div class="toggle-row" style="gap:0.4rem">
+          <button id="auth-login-btn" class="toggle-btn toggle-btn-active">登录</button>
+          <button id="auth-register-btn" class="toggle-btn">注册</button>
         </div>
-        <p id="auth-status" style="margin-top:0.5rem;font-size:0.8rem;color:var(--text-secondary);min-height:1.2em"></p>
+        <p id="auth-status" class="modal-status"></p>
       </div>
       <!-- Logged-in state -->
       <div id="auth-user" style="display:none">
-        <h2 style="color:var(--text-highlight);margin-bottom:0.75rem">👤 <span id="auth-username-display"></span></h2>
-        <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:0.75rem" id="auth-role-desc"></p>
-        <button id="auth-logout-btn" style="display:block;width:100%;padding:0.4rem 0;font-size:0.85rem;background:var(--btn-bg);color:var(--text-primary);border:1px solid var(--border);font-family:inherit;cursor:pointer;border-radius:3px">登出</button>
+        <h2 class="modal-title">👤 <span id="auth-username-display"></span></h2>
+        <p class="modal-desc" id="auth-role-desc"></p>
+        <button id="auth-logout-btn" class="toggle-btn" style="display:block;width:100%">登出</button>
       </div>
     </div>
   </div>
 
   <!-- Toast notification (bottom-left) -->
-  <div id="toast" style="position:fixed;bottom:1.5rem;left:1.5rem;z-index:9999;pointer-events:none;display:flex;flex-direction:column;gap:0.4rem"></div>
+  <div id="toast" class="toast-container"></div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

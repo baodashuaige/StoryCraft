@@ -43,30 +43,35 @@ router.get("/", optionalAuth, (_req, res) => {
 
 // POST /api/keys — save key (auth required)
 router.post("/", authMiddleware, (req, res) => {
-  const user = (req as any).user as AuthPayload;
-  const { apiKey, baseUrl, model, provider } = req.body;
-  if (!apiKey || !baseUrl || !model) {
-    res.status(400).json({ error: "apiKey, baseUrl, model required" });
-    return;
+  try {
+    const user = (req as any).user as AuthPayload;
+    const { apiKey, baseUrl, model, provider } = req.body;
+    if (!apiKey || !baseUrl || !model) {
+      res.status(400).json({ error: "apiKey, baseUrl, model required" });
+      return;
+    }
+
+    const db = getDb();
+    // Verify role from DB, not JWT
+    const userRow = queryFirst("SELECT role FROM users WHERE id = ?", [user.userId]);
+    const isHost = userRow?.role === "host" ? 1 : 0;
+    const encryptedKey = encrypt(apiKey);
+
+    const existing = queryFirst("SELECT id FROM api_keys WHERE user_id = ? AND is_host = ?", [user.userId, isHost]);
+    if (existing) {
+      db.run("UPDATE api_keys SET api_key = ?, base_url = ?, model = ?, provider = ? WHERE user_id = ? AND is_host = ?",
+        [encryptedKey, baseUrl, model, provider || "deepseek", user.userId, isHost]);
+    } else {
+      db.run("INSERT INTO api_keys (id, user_id, provider, api_key, base_url, model, is_host) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [randomUUID(), user.userId, provider || "deepseek", encryptedKey, baseUrl, model, isHost]);
+    }
+    saveDb();
+
+    res.json({ ok: true });
+  } catch (err: any) {
+    console.error("[POST /api/keys] Error:", err.message || err);
+    res.status(500).json({ error: err.message || "Failed to save key" });
   }
-
-  const db = getDb();
-  // Verify role from DB, not JWT
-  const userRow = queryFirst("SELECT role FROM users WHERE id = ?", [user.userId]);
-  const isHost = userRow?.role === "host" ? 1 : 0;
-  const encryptedKey = encrypt(apiKey);
-
-  const existing = queryFirst("SELECT id FROM api_keys WHERE user_id = ? AND is_host = ?", [user.userId, isHost]);
-  if (existing) {
-    db.run("UPDATE api_keys SET api_key = ?, base_url = ?, model = ?, provider = ? WHERE user_id = ? AND is_host = ?",
-      [encryptedKey, baseUrl, model, provider || "deepseek", user.userId, isHost]);
-  } else {
-    db.run("INSERT INTO api_keys (id, user_id, provider, api_key, base_url, model, is_host) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [randomUUID(), user.userId, provider || "deepseek", encryptedKey, baseUrl, model, isHost]);
-  }
-  saveDb();
-
-  res.json({ ok: true });
 });
 
 // DELETE /api/keys — remove own key (auth required)

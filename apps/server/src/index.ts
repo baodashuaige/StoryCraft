@@ -1,4 +1,13 @@
-import "dotenv/config";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Load .env from project root first, then fallback to local
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootEnv = path.resolve(__dirname, "../../../.env");
+dotenv.config({ path: rootEnv });
+dotenv.config(); // fallback: apps/server/.env
+
 import express from "express";
 import { initDb } from "./db/client.js";
 import { runMigrations } from "./db/migrate.js";

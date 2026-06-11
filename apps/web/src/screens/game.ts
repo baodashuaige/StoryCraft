@@ -227,8 +227,8 @@ function renderInitialScene(): void {
 
   const introEn = pack.meta.intro.en;
   const introZh = pack.meta.intro.zh;
-  narHistory.push({ css: "ok", en: introEn, zh: introZh });
-  appendNar("ok", tr.lang === "zh" ? introZh : introEn);
+  narHistory.push({ css: "intro", en: introEn, zh: introZh });
+  appendNar("intro", tr.lang === "zh" ? introZh : introEn);
 
   // Help text hidden — command bar is self-explanatory
 }
@@ -558,12 +558,12 @@ function renderNpcPanel(v: VisibleState): void {
   const mobile = isMobile();
   const panel = mobile ? document.getElementById("npc-list-inline")! : $("npc-list");
   const wrapper = document.getElementById("npc-panel-inline")!;
-  if (mobile) wrapper.style.display = "";
+  if (mobile) wrapper.classList.remove("hidden");
 
   panel.innerHTML = "";
   if (v.presentNpcs.length === 0) {
     panel.innerHTML = `<div style="color:var(--text-secondary);font-style:italic;font-size:0.85rem">${UI.noOneHere()}</div>`;
-    if (mobile) wrapper.style.display = "none";
+    if (mobile) wrapper.classList.add("hidden");
     return;
   }
 

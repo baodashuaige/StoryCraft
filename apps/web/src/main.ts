@@ -68,7 +68,9 @@ function applyLang(): void {
   }
 
   // Update buttons
-  document.getElementById("lang-toggle-lobby")!.textContent = UI.langBtn();
+  const langText = UI.langBtn();
+  document.getElementById("lang-toggle-lobby")!.textContent = langText;
+  document.getElementById("lang-toggle-game")!.textContent = langText;
   document.getElementById("command-input")!.placeholder = UI.inputPH();
 }
 
