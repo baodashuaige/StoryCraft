@@ -112,11 +112,14 @@ body::after {
   background: var(--bg-panel); border-bottom: 1px solid var(--border);
   font-size: 0.82rem; color: var(--text-secondary);
   letter-spacing: 0.03em;
+  position: sticky; top: 0; z-index: 50;
 }
 #turns-display { color: var(--text-accent); font-weight: bold; }
 
 /* ── Main layout ───────────────────────────────────────── */
-#main-layout { display: flex; height: calc(100vh - 2.2rem); }
+#game { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+#game:not(.hidden) { display: flex; }
+#main-layout { display: flex; flex: 1; min-height: 0; }
 #left-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 #right-panel {
   width: 290px;
