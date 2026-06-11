@@ -75,12 +75,12 @@ describe("evaluateAccusation", () => {
 
   it("matches ending by requiresRoomId — mercy at gatehouse", () => {
     const ws = state({
-      currentRoomId: "room_gatehouse",
+      currentRoomId: "room_great_hall",
       discoveredCluesById: ALL_CLUES,
       consequenceIds: ["conseq_tipped_off_theo" as any],
       npcRoomById: {
         ...s().npcRoomById,
-        npc_theo_rusk: "room_gatehouse"
+        npc_theo_rusk: "room_great_hall"
       }
     });
     const result = evaluateAccusation(ws, frostmereAdventure, "npc_theo_rusk" as NpcId, "mercy");
@@ -90,12 +90,12 @@ describe("evaluateAccusation", () => {
 
   it("skips ending when requiresRoomId does not match", () => {
     const ws = state({
-      currentRoomId: "room_great_hall", // NOT gatehouse
+      currentRoomId: "room_study", // NOT great hall
       discoveredCluesById: ALL_CLUES,
       consequenceIds: ["conseq_tipped_off_theo" as any]
     });
     const result = evaluateAccusation(ws, frostmereAdventure, "npc_theo_rusk" as NpcId, "mercy");
-    // mercy ending requires gatehouse, so it should fall through
+    // mercy ending requires great hall, so it should fall through
     assert.notEqual(result, null);
     assert.notEqual(result!.endingId, "ending_apprentice_confession");
   });
@@ -213,12 +213,12 @@ describe("evaluateDawnForcing", () => {
 describe("All 8 endings — isolation tests", () => {
   it("ending_apprentice_confession: priority 1 — mercy + gatehouse + 4 clues + motive + staged + tipped off + not public", () => {
     const ws = state({
-      currentRoomId: "room_gatehouse",
+      currentRoomId: "room_great_hall",
       discoveredCluesById: ALL_CLUES,
       consequenceIds: ["conseq_tipped_off_theo" as any],
       npcRoomById: {
         ...s().npcRoomById,
-        npc_theo_rusk: "room_gatehouse"
+        npc_theo_rusk: "room_great_hall"
       }
     });
     const result = evaluateAccusation(ws, frostmereAdventure, "npc_theo_rusk" as NpcId, "mercy");

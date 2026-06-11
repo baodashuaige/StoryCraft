@@ -14,9 +14,9 @@ describe("spendTurn", () => {
 
   it("decrements turnsRemaining by 1", () => {
     const state = s();
-    assert.equal(state.turnsRemaining, 8);
+    assert.equal(state.turnsRemaining, 9);
     const next = spendTurn(state);
-    assert.equal(next.turnsRemaining, 7);
+    assert.equal(next.turnsRemaining, 8);
   });
 
   it("clamps turnsRemaining at 0 (never negative)", () => {
@@ -32,7 +32,7 @@ describe("spendTurn", () => {
     const next = spendTurn(state);
     assert.notEqual(state, next);
     assert.equal(state.turnIndex, 0, "original should not be mutated");
-    assert.equal(state.turnsRemaining, 8, "original should not be mutated");
+    assert.equal(state.turnsRemaining, 9, "original should not be mutated");
   });
 });
 
@@ -59,41 +59,45 @@ describe("isTurnBearingCommand", () => {
 // Turn economy integration
 // ===========================================================================
 describe("Turn economy integration", () => {
-  it("spending all 8 turns triggers dawn ending", () => {
+  it("spending all 9 turns triggers dawn ending", () => {
     let state = s();
     // Search body (1 turn)
     state = run(state, cmd("search", { target: "body" })).state;
-    assert.equal(state.turnsRemaining, 7);
+    assert.equal(state.turnsRemaining, 8);
     // Search desk — need to go to study first (free)
     state = run(state, cmd("go", { target: "study" })).state;
     state = run(state, cmd("search", { target: "desk" })).state;
-    assert.equal(state.turnsRemaining, 6);
+    assert.equal(state.turnsRemaining, 7);
     // Go to servants hall (free)
     state = run(state, cmd("go", { target: "west" })).state;
     state = run(state, cmd("go", { target: "west" })).state; // servants hall
     // Search bell board (1 turn)
     state = run(state, cmd("search", { target: "bell board" })).state;
-    assert.equal(state.turnsRemaining, 5);
+    assert.equal(state.turnsRemaining, 6);
     // Talk to Mina about alden (1 turn)
     state = run(state, cmd("talk", { npc: "mina", topic: "alden" })).state;
-    assert.equal(state.turnsRemaining, 4);
+    assert.equal(state.turnsRemaining, 5);
     // Talk to Mina about bell (1 turn)
     state = run(state, cmd("talk", { npc: "mina", topic: "bell" })).state;
-    assert.equal(state.turnsRemaining, 3);
+    assert.equal(state.turnsRemaining, 4);
     // Go to winter garden (free) then coach yard (free)
     state = run(state, cmd("go", { target: "east" })).state; // great hall
     state = run(state, cmd("go", { target: "south" })).state; // winter garden
     state = run(state, cmd("go", { target: "south" })).state; // coach yard
     // Search snowbank (1 turn)
     state = run(state, cmd("search", { target: "snowbank" })).state;
-    assert.equal(state.turnsRemaining, 2);
+    assert.equal(state.turnsRemaining, 3);
     // Talk Vale about report — go back to great hall (free)
     state = run(state, cmd("go", { target: "north" })).state; // winter garden
     state = run(state, cmd("go", { target: "north" })).state; // great hall
     state = run(state, cmd("talk", { npc: "vale", topic: "report" })).state;
-    assert.equal(state.turnsRemaining, 1);
+    assert.equal(state.turnsRemaining, 2);
     // Talk Vale about rush (1 turn)
     state = run(state, cmd("talk", { npc: "vale", topic: "rush" })).state;
+    // Return to servants hall and talk to Mina about key (9th turn)
+    state = run(state, cmd("go", { target: "west" })).state;
+    state = run(state, cmd("go", { target: "west" })).state;
+    state = run(state, cmd("talk", { npc: "mina", topic: "key" })).state;
     // After this, turnsRemaining should be 0 and dawn ending applied
     assert.equal(state.endingId, "ending_dawn_breaks_unanswered");
     assert.equal(state.isComplete, true);
@@ -113,9 +117,9 @@ describe("Turn economy integration", () => {
     assert.equal(invResult.ok, true);
   });
 
-  it("turnsRemaining goes from 8 to 0 after exactly 8 turn-spending commands", () => {
+  it("turnsRemaining goes from 9 to 0 after exactly 9 turn-spending commands", () => {
     let state = s();
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 9; i++) {
       // Alternate search (body only once, then repeat = free)
       // Use search body first time, then just search body again (free after first)
       // Instead, use a mix: search body, then talk mina about alden multiple times
@@ -125,6 +129,6 @@ describe("Turn economy integration", () => {
       state = { ...state, turnIndex: state.turnIndex + 1, turnsRemaining: state.turnsRemaining - 1 };
     }
     assert.equal(state.turnsRemaining, 0);
-    assert.equal(state.turnIndex, 8);
+    assert.equal(state.turnIndex, 9);
   });
 });

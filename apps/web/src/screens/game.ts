@@ -13,6 +13,36 @@ import "../services/devlog";
 import { startSnow, stopSnow } from "../effects/snow";
 import { ROOM_IMAGE, NPC_IMAGE } from "../images";
 
+// --- Mobile detection ---
+function isMobile(): boolean {
+  return window.innerWidth <= 768;
+}
+
+// --- Sidebar toggle (mobile) ---
+function initSidebar(): void {
+  if (!isMobile()) return;
+  const tab = document.getElementById("sidebar-tab")!;
+  const overlay = document.getElementById("sidebar-overlay")!;
+  const panel = document.getElementById("right-panel")!;
+
+  function open() {
+    panel.classList.add("sidebar-open");
+    overlay.classList.remove("hidden");
+    tab.textContent = "▶";
+  }
+  function close() {
+    panel.classList.remove("sidebar-open");
+    overlay.classList.add("hidden");
+    tab.textContent = "◀";
+  }
+
+  tab.style.display = "";
+  tab.addEventListener("click", () => {
+    if (panel.classList.contains("sidebar-open")) close(); else open();
+  });
+  overlay.addEventListener("click", close);
+}
+
 // --- Module state ---
 let pack: WorldPack;
 let adventure: AdventureDefinition;
@@ -56,12 +86,13 @@ export async function startGame(worldPack: WorldPack): Promise<void> {
   startSnow();
 
   renderInitialScene();
+  initSidebar();
 
   // Move room-art into left-panel root so it acts as a full-bleed background
   const leftPanel = $("left-panel");
   leftPanel.insertBefore($("room-art"), leftPanel.firstChild);
 
-  ($("command-input") as HTMLInputElement).focus();
+  if (!isMobile()) ($("command-input") as HTMLInputElement).focus();
 }
 
 export function getState(): WorldState {
@@ -187,7 +218,7 @@ export async function executeAndRender(input: CommandInput): Promise<void> {
       800,
     );
   }
-  ($("command-input") as HTMLInputElement).focus();
+  if (!isMobile()) ($("command-input") as HTMLInputElement).focus();
 }
 
 function renderInitialScene(): void {
@@ -334,7 +365,7 @@ async function executeAiDialogue(npcId: string, playerInput: string): Promise<vo
     isProcessing = false;
     setInputsDisabled(false);
     ($("narrative-log").parentElement!).scrollTop = ($("narrative-log").parentElement!).scrollHeight;
-    ($("command-input") as HTMLInputElement).focus();
+    if (!isMobile()) ($("command-input") as HTMLInputElement).focus();
   }
 }
 
@@ -522,10 +553,16 @@ function renderNpcSelect(v: VisibleState): void {
 
 // --- NPC panel ---
 function renderNpcPanel(v: VisibleState): void {
-  const panel = $("npc-list");
+  // Mobile: render to inline panel; Desktop: render to right sidebar
+  const mobile = isMobile();
+  const panel = mobile ? document.getElementById("npc-list-inline")! : $("npc-list");
+  const wrapper = document.getElementById("npc-panel-inline")!;
+  if (mobile) wrapper.style.display = "";
+
   panel.innerHTML = "";
   if (v.presentNpcs.length === 0) {
     panel.innerHTML = `<div style="color:var(--text-secondary);font-style:italic;font-size:0.85rem">${UI.noOneHere()}</div>`;
+    if (mobile) wrapper.style.display = "none";
     return;
   }
 
@@ -535,12 +572,12 @@ function renderNpcPanel(v: VisibleState): void {
     const nameSpan = document.createElement("div");
     nameSpan.className = "npc-name";
     nameSpan.textContent = `${tr.npc(npc.id)}（${tr.npcRole(npc.id)}）`;
-    // NPC portrait
+    // NPC portrait - smaller on mobile
     const portraitSrc = NPC_IMAGE[npc.id];
     if (portraitSrc) {
       const portrait = document.createElement("img");
       portrait.src = portraitSrc;
-      portrait.className = "npc-portrait";
+      portrait.className = mobile ? "npc-portrait-mobile" : "npc-portrait";
       portrait.alt = tr.npc(npc.id);
       div.appendChild(portrait);
     }

@@ -44,9 +44,9 @@ describe("getVisibleState — initial state", () => {
     assert.deepEqual(vs.consequences, []);
   });
 
-  it("shows 8 turns remaining", () => {
+  it("shows 9 turns remaining", () => {
     const vs = getVisibleState(s());
-    assert.equal(vs.turnsRemaining, 8);
+    assert.equal(vs.turnsRemaining, 9);
   });
 
   it("shows null ending", () => {
@@ -156,9 +156,9 @@ describe("getVisibleState — after NPC movement", () => {
   it("shows moved NPC in new room", () => {
     const state = {
       ...s(),
-      currentRoomId: "room_gatehouse",
-      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_gatehouse"],
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      currentRoomId: "room_study",
+      visitedRoomIds: ["room_great_hall", "room_study"],
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_study" }
     };
     const vs = getVisibleState(state);
     const npcIds = vs.presentNpcs.map(n => n.id);
@@ -168,7 +168,7 @@ describe("getVisibleState — after NPC movement", () => {
   it("no longer shows moved NPC in old room", () => {
     const state = {
       ...s(),
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_study" }
     };
     const vs = getVisibleState(state);
     // Great Hall — should still have Vale but not Theo

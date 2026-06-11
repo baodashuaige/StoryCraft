@@ -14,7 +14,7 @@ describe("use command — key on tower", () => {
   it("spends one investigation turn", () => {
     const state = stateWithItems("item_brass_service_key");
     const result = run(state, cmd("use", { item: "key", target: "tower door" }));
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
   });
 
   it("records conseq_used_private_key", () => {
@@ -76,7 +76,7 @@ describe("use command — ledger on Theo", () => {
       inventoryItemIds: ["item_torn_ledger_page"]
     };
     const result = run(state, cmd("use", { item: "ledger page", target: "theo" }));
-    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_gatehouse");
+    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_great_hall");
   });
 
   it("fails if Theo is not in current room", () => {
@@ -112,7 +112,7 @@ describe("use command — ledger on Theo", () => {
       inventoryItemIds: ["item_torn_ledger_page"]
     };
     const result = run(state, cmd("use", { item: "ledger page", target: "theo" }));
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
   });
 });
 
@@ -140,7 +140,7 @@ describe("use command — gloves on Theo", () => {
       inventoryItemIds: ["item_soot_stained_gloves"]
     };
     const result = run(state, cmd("use", { item: "gloves", target: "theo" }));
-    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_gatehouse");
+    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_great_hall");
   });
 
   it("requires gloves in inventory", () => {
@@ -152,7 +152,8 @@ describe("use command — gloves on Theo", () => {
   it("requires Theo present in room", () => {
     const state = {
       ...stateWithItems("item_soot_stained_gloves"),
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      currentRoomId: "room_study" as const,
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_great_hall" }
     };
     const result = run(state, cmd("use", { item: "gloves", target: "theo" }));
     assertRejected(result);

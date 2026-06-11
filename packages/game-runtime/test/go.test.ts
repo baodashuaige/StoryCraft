@@ -15,7 +15,7 @@ describe("go command — basic mechanics", () => {
   it("does not consume an investigation turn", () => {
     const result = run(s(), cmd("go", { target: "east" }));
     assert.equal(result.turnSpent, false);
-    assert.equal(result.state.turnsRemaining, 8);
+    assert.equal(result.state.turnsRemaining, 9);
   });
 
   it("records room_entered event", () => {

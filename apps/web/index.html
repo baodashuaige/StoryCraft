@@ -64,6 +64,10 @@
           <div id="narrative-log"></div>
         </section>
 
+        <section id="npc-panel-inline" style="display:none">
+          <div id="npc-list-inline"></div>
+        </section>
+
         <div id="command-bar">
           <select id="npc-select" class="npc-select hidden" autocomplete="off"></select>
           <input type="text" id="command-input" placeholder="说点什么…" autocomplete="off" />
@@ -118,6 +122,12 @@
       </aside>
     </div>
   </div>
+
+  <!-- 移动端右侧栏拉出标签 -->
+  <button id="sidebar-tab" title="打开面板">◀</button>
+
+  <!-- 移动端侧栏遮罩 -->
+  <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
 
   <!-- AI 设置弹窗 (no auth — that's separate) -->
   <div id="settings-modal" class="overlay hidden" style="background:rgba(0,0,0,0.6)">

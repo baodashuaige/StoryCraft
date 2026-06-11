@@ -48,7 +48,7 @@ describe("talk command — Mina topics", () => {
     let state = run(s(), cmd("go", { target: "west" })).state;
     const result = run(state, cmd("talk", { npc: "mina", topic: "alden" }));
     assertOk(result);
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
     assert.equal(result.state.trustByNpcId.npc_mina_arlen, 1);
   });
 
@@ -66,7 +66,7 @@ describe("talk command — Mina topics", () => {
     assert.equal(state.trustByNpcId.npc_mina_arlen, 1);
     const result = run(state, cmd("talk", { npc: "mina", topic: "bell" }));
     assertOk(result);
-    assertTurnSpent(result, 6);
+    assertTurnSpent(result, 7);
     assert.equal(result.state.trustByNpcId.npc_mina_arlen, 2);
     assert.ok(result.state.discoveredCluesById.clue_servant_bell_after_death);
   });
@@ -110,7 +110,7 @@ describe("talk command — Theo topics", () => {
     let state = run(s(), cmd("go", { target: "east" })).state; // study
     const result = run(state, cmd("talk", { npc: "theo", topic: "designs" }));
     assertOk(result);
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
     assert.equal(result.state.trustByNpcId.npc_theo_rusk, 1);
   });
 
@@ -123,7 +123,7 @@ describe("talk command — Theo topics", () => {
     };
     const result = run(state, cmd("talk", { npc: "theo", topic: "gloves" }));
     assertOk(result);
-    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_gatehouse");
+    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_great_hall");
     assert.ok(result.state.consequenceIds.includes("conseq_tipped_off_theo"));
   });
 
@@ -157,7 +157,7 @@ describe("talk command — Theo topics", () => {
     };
     const result = run(state, cmd("talk", { npc: "theo", topic: "ledger" }));
     assertOk(result);
-    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_gatehouse");
+    assert.equal(result.state.npcRoomById.npc_theo_rusk, "room_great_hall");
     assert.ok(result.state.consequenceIds.includes("conseq_tipped_off_theo"));
   });
 
@@ -171,8 +171,8 @@ describe("talk command — Theo topics", () => {
     // Theo is at gatehouse, player is at gatehouse, 4+ clues, tipped off
     const state = {
       ...s(),
-      currentRoomId: "room_gatehouse",
-      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_gatehouse"],
+      currentRoomId: "room_great_hall",
+      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_great_hall"],
       discoveredCluesById: {
         clue_watch_stopped_1147: "standard",
         clue_stolen_design_motive: "standard",
@@ -180,7 +180,7 @@ describe("talk command — Theo topics", () => {
         clue_drugged_before_fall: "standard"
       } as Record<string, EvidenceStrength>,
       consequenceIds: ["conseq_tipped_off_theo"],
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_great_hall" }
     };
     const result = run(state, cmd("talk", { npc: "theo", topic: "mercy" }));
     assertOk(result);
@@ -190,13 +190,13 @@ describe("talk command — Theo topics", () => {
   it("topic mercy without enough clues is blocked", () => {
     const state = {
       ...s(),
-      currentRoomId: "room_gatehouse",
-      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_gatehouse"],
+      currentRoomId: "room_great_hall",
+      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_great_hall"],
       discoveredCluesById: {
         clue_watch_stopped_1147: "standard" // only 1 clue
       } as Record<string, EvidenceStrength>,
       consequenceIds: ["conseq_tipped_off_theo"],
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_great_hall" }
     };
     const result = run(state, cmd("talk", { npc: "theo", topic: "mercy" }));
     assert.equal(result.turnSpent, false);
@@ -206,15 +206,15 @@ describe("talk command — Theo topics", () => {
   it("topic mercy without tipped_off_theo consequence is blocked", () => {
     const state = {
       ...s(),
-      currentRoomId: "room_gatehouse",
-      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_gatehouse"],
+      currentRoomId: "room_great_hall",
+      visitedRoomIds: ["room_great_hall", "room_winter_garden", "room_coach_yard", "room_great_hall"],
       discoveredCluesById: {
         clue_watch_stopped_1147: "standard",
         clue_stolen_design_motive: "standard",
         clue_tower_staged: "standard",
         clue_drugged_before_fall: "standard"
       } as Record<string, EvidenceStrength>,
-      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_gatehouse" }
+      npcRoomById: { ...s().npcRoomById, npc_theo_rusk: "room_great_hall" }
     };
     const result = run(state, cmd("talk", { npc: "theo", topic: "mercy" }));
     assert.equal(result.turnSpent, false);
@@ -237,7 +237,7 @@ describe("talk command — Vale topics", () => {
     };
     const result = run(state, cmd("talk", { npc: "vale", topic: "report" }));
     assertOk(result);
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
     assert.equal(result.state.trustByNpcId.npc_captain_vale, 1);
   });
 
@@ -256,7 +256,7 @@ describe("talk command — Vale topics", () => {
   it("topic rush always passes and records conseq_captain_rushed_case", () => {
     const result = run(s(), cmd("talk", { npc: "vale", topic: "rush" }));
     assertOk(result);
-    assertTurnSpent(result, 7);
+    assertTurnSpent(result, 8);
     assert.ok(result.state.consequenceIds.includes("conseq_captain_rushed_case"));
   });
 

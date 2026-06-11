@@ -150,11 +150,11 @@ export function executeUse(
     nextState = recordConsequence(nextState, cId);
   }
 
-  // If consequence includes tipped_off_theo, move Theo to gatehouse
+  // If consequence includes tipped_off_theo, move Theo to Great Hall
   if (rule.consequenceIds?.includes("conseq_tipped_off_theo")) {
     const npcRoomById = {
       ...nextState.npcRoomById,
-      npc_theo_rusk: "room_gatehouse" as const
+      npc_theo_rusk: "room_great_hall" as const
     };
     nextState = { ...nextState, npcRoomById };
   }
