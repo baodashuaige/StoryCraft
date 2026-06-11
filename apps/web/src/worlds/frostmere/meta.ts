@@ -13,7 +13,7 @@ export const frostmereMeta: WorldMeta = {
   },
   intro: {
     zh: "暴风雪之夜，庄园主人奥登·沃斯被发现死在钟楼之下。家中众人声称钟楼门从内部锁死。黎明时分，山路将被打通，嫌疑人将四散而去。你只有9 个调查回合来揭开真相。",
-    en: "Master Alden Voss is found dead below the bell tower during a snowstorm. The household claims the tower door was locked from the inside. At dawn, the mountain road opens and the suspects can leave. You have <strong>9 investigation turns</strong> to find the truth.",
+    en: "Master Alden Voss is found dead below the bell tower during a snowstorm. The household claims the tower door was locked from the inside. At dawn, the mountain road opens and the suspects can leave. You have 9 investigation turns to find the truth.",
   help: {
     zh: "可以点击右侧地图和按钮操作，也可以输入命令：look, go, search, take, talk, use, inventory, accuse",
     en: "Click the map and buttons on the right, or type commands: look, go, search, take, talk, use, inventory, accuse",
@@ -49,4 +49,5 @@ export const frostmereMeta: WorldMeta = {
     room_coach_yard: ["item_vial_laudanum"],
     room_bell_tower: ["item_cracked_bell_clapper"],
   },
+}
 };
