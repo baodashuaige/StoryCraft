@@ -144,7 +144,7 @@ body::after {
 #scene-panel {
   padding: 1.25rem 1.5rem 0.75rem;
   border-bottom: 1px solid var(--border);
-  position: relative; z-index: 1; flex-shrink: 0;
+  position: relative; flex-shrink: 0;
 }
 #scene-panel::before {
   content: "";
@@ -167,7 +167,7 @@ body::after {
 /* ── Narrative panel ───────────────────────────────────── */
 #narrative-panel {
   flex: 1; overflow-y: auto; padding: 1rem 1.5rem;
-  background: rgba(11,10,8,0.3); position: relative; z-index: 1;
+  background: rgba(11,10,8,0.3);
 }
 #narrative-log { display: flex; flex-direction: column; gap: 0.75rem; }
 .narrative-entry {
@@ -271,7 +271,7 @@ body::after {
 /* ── Command bar (investigation journal) ───────────────── */
 #command-bar {
   display: flex; border-top: 1px solid var(--border); position: relative;
-  background: var(--bg-panel); flex-shrink: 0; z-index: 1;
+  background: var(--bg-panel); flex-shrink: 0;
 }
 #command-bar::before {
   content: "§";
@@ -488,7 +488,7 @@ body::after {
 
   /* NPC inline panel (between narrative and command bar) */
   #npc-panel-inline {
-    display: block; flex-shrink: 0; position: relative; z-index: 1;
+    display: block; flex-shrink: 0;
     border-top: 1px solid var(--border);
     padding: 0.5rem 0.75rem;
     max-height: 30vh; overflow-y: auto;
