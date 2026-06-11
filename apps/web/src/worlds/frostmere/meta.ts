@@ -12,7 +12,7 @@ export const frostmereMeta: WorldMeta = {
     en: "Master Alden Voss is found dead below the bell tower during a snowstorm. The household claims the tower door was locked from the inside. At dawn, the mountain road opens and the suspects can leave. You have <strong>8 investigation turns</strong> to find the truth.",
   },
   intro: {
-    zh: "你站在弗罗斯特米尔庄园的大厅中。楼梯旁有一具被覆盖的尸体。塔楼门矗立在楼梯平台之上。罗恩·韦尔队长用不耐烦的目光注视着你。",
+    zh: "暴风雪之夜，庄园主人奥登·沃斯被发现死在钟楼之下。家中众人声称钟楼门从内部锁死。黎明时分，山路将被打通，嫌疑人将四散而去。你只有 8 个调查回合来揭开真相。",
     en: "You stand in the Great Hall of Frostmere House. A covered body lies near the stair. The tower door looms above the landing. Captain Rowan Vale watches you with impatient eyes.",
   },
   help: {
