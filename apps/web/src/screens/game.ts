@@ -8,6 +8,7 @@ import { UI, createTranslator, type Translator, getLang, t } from "../i18n";
 import type { Lang } from "../i18n";
 import { generateMapSvg } from "../map-renderer";
 import { showEnding } from "./end";
+import { isHost } from "./auth";
 // Import devlog to ensure window.__devlog is initialized
 import "../services/devlog";
 import { startSnow, stopSnow } from "../effects/snow";
@@ -291,8 +292,8 @@ async function executeAiDialogue(npcId: string, playerInput: string): Promise<vo
     el.innerHTML = `${esc(result.dialogue)}${aiBadge}`;
     $("narrative-log").appendChild(el);
 
-    // --- Render debug block (dev mode) ---
-    renderDebugBlock(result);
+    // --- Render debug block (host only) ---
+    if (isHost()) renderDebugBlock(result);
 
     // Render gate effects (clues, items, trust from gate, turn spent)
     if (result.gateEffects) {

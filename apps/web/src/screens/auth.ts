@@ -39,6 +39,17 @@ export function initAuth(): void {
 
 // ─── Open / Close ───────────────────────────────────────────────────
 
+/** Check if the current user is logged in as host (房主) */
+export function isHost(): boolean {
+  if (!isLoggedIn()) return false;
+  try {
+    const payload = JSON.parse(atob(getToken()!.split(".")[1]));
+    return payload.role === "host";
+  } catch {
+    return false;
+  }
+}
+
 export function openAuth(): void {
   const modal = document.getElementById("auth-modal") as HTMLElement;
   modal.classList.remove("hidden");
