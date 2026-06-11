@@ -447,8 +447,8 @@ body::after {
   /* Floating tab on right edge */
   #sidebar-tab {
     display: flex; align-items: center; justify-content: center;
-    position: fixed; right: 0; top: 50%; transform: translateY(-50%);
-    z-index: 198; width: 28px; height: 72px;
+    position: fixed; right: 0; top: 62%; transform: translateY(-50%);
+    z-index: 202; width: 28px; height: 72px;
     background: var(--btn-bg); color: var(--text-accent);
     border: 1px solid var(--border-strong); border-right: none;
     border-radius: 6px 0 0 6px; font-size: 0.8rem; cursor: pointer;
