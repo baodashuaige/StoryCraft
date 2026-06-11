@@ -5,6 +5,11 @@ import type { DialogueAiResponse, DialogueContext, NpcScript } from "../src/dial
 
 // ─── Test fixtures ───────────────────────────────────────────────────
 
+const TEST_KEYWORD_MAP: Record<string, string[]> = {
+  "bell": ["钟", "铃", "钟声", "铃声"],
+  "tower": ["塔", "塔楼", "钟楼"],
+};
+
 const makeNpcScript = (gateId: string, description: string, conditions: string): NpcScript => ({
   npcId: "mina",
   name: "Mina",
@@ -52,7 +57,7 @@ describe("gate-review — greeting/short input NOT filtered here", () => {
     };
     // Short input would previously null the gate — now it passes through
     // because greeting/short-input filtering moved to dialogue-intent.ts
-    const result = reviewGateTrigger(validated, "hi", script, ctx);
+    const result = reviewGateTrigger(validated, "hi", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     // Keyword "hi" doesn't match bell keywords, so gate is nulled for relevance
     // But it's NOT nulled for being short — that check is gone
     assert.equal(result.candidateGateId, null); // nulled for relevance, not length
@@ -68,7 +73,7 @@ describe("gate-review — greeting/short input NOT filtered here", () => {
     };
     // "good evening, can you tell me about the bell"
     // contains "bell" keyword, so relevance passes
-    const result = reviewGateTrigger(validated, "good evening, what about the bell?", script, ctx);
+    const result = reviewGateTrigger(validated, "good evening, what about the bell?", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, "gate_bell");
   });
 });
@@ -84,7 +89,7 @@ describe("gate-review — keyword relevance check (kept)", () => {
       gateConfidence: "high",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "what is your favorite color?", script, ctx);
+    const result = reviewGateTrigger(validated, "what is your favorite color?", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, null);
   });
 
@@ -96,7 +101,7 @@ describe("gate-review — keyword relevance check (kept)", () => {
       gateConfidence: "high",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "tell me about the bell", script, ctx);
+    const result = reviewGateTrigger(validated, "tell me about the bell", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, "gate_bell");
   });
 
@@ -108,7 +113,7 @@ describe("gate-review — keyword relevance check (kept)", () => {
       gateConfidence: "high",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "你听到钟声了吗", script, ctx);
+    const result = reviewGateTrigger(validated, "你听到钟声了吗", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, "gate_bell");
   });
 });
@@ -124,7 +129,7 @@ describe("gate-review — AI evidence quality check (kept)", () => {
       gateConfidence: "low",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "what about the bell?", script, ctx);
+    const result = reviewGateTrigger(validated, "what about the bell?", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, null);
   });
 
@@ -136,7 +141,7 @@ describe("gate-review — AI evidence quality check (kept)", () => {
       gateConfidence: "low",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "what about the bell?", script, ctx);
+    const result = reviewGateTrigger(validated, "what about the bell?", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, "gate_bell");
   });
 
@@ -148,7 +153,7 @@ describe("gate-review — AI evidence quality check (kept)", () => {
       gateConfidence: "medium",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "what about the bell?", script, ctx);
+    const result = reviewGateTrigger(validated, "what about the bell?", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, "gate_bell");
   });
 });
@@ -163,18 +168,23 @@ describe("gate-review — returns unchanged when candidateGateId is null", () =>
       gateConfidence: "low",
       candidateActionHint: null,
     };
-    const result = reviewGateTrigger(validated, "hi", script, ctx);
+    const result = reviewGateTrigger(validated, "hi", script, ctx, { bilingualKeywordMap: TEST_KEYWORD_MAP });
     assert.equal(result.candidateGateId, null);
     assert.equal(result.dialogue, "Hello.");
   });
 });
 
 describe("expandKeywordsBilingually", () => {
-  it("expands English keywords with Chinese equivalents", () => {
-    const result = expandKeywordsBilingually(["bell", "tower"]);
+  it("expands English keywords with Chinese equivalents when map provided", () => {
+    const result = expandKeywordsBilingually(["bell", "tower"], TEST_KEYWORD_MAP);
     assert.ok(result.includes("bell"));
     assert.ok(result.includes("钟"));
     assert.ok(result.includes("tower"));
     assert.ok(result.includes("塔"));
+  });
+
+  it("returns original keywords when no map provided", () => {
+    const result = expandKeywordsBilingually(["bell", "tower"]);
+    assert.deepEqual(result, ["bell", "tower"]);
   });
 });

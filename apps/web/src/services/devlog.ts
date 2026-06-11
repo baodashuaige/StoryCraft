@@ -9,7 +9,7 @@
 //   __devlog.last()   — returns the most recent entry
 
 import type { DialogueIntent } from "./dialogue-intent";
-import type { DialogueAiResponse } from "@ai-narrative";
+import type { DialogueAiResponse } from "@wutiankai/npc-dialogue";
 
 // ─── Types ──────────────────────────────────────────────────────────
 

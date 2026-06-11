@@ -1,4 +1,4 @@
-import type { NpcScript } from "@ai-narrative";
+import type { NpcScript } from "@wutiankai/npc-dialogue";
 import { minaScript } from "./mina";
 import { theoScript } from "./theo";
 import { valeScript } from "./vale";

@@ -1,6 +1,3 @@
-import { z } from "zod";
-import type { RuntimeEvent, VisibleState, TrustLevel } from "../../shared/src";
-
 // ─── Provider State Machine ─────────────────────────────────────────
 
 export type ProviderState =
@@ -20,6 +17,10 @@ export interface ProviderStatus {
   configRedacted: { baseUrl: string; model: string };
 }
 
+// ─── Trust Level (self-contained, no @shared dependency) ────────────
+
+export type TrustLevel = 0 | 1 | 2;
+
 // ─── Grounding Data ─────────────────────────────────────────────────
 // Known facts sent to the AI to constrain its output.
 
@@ -33,18 +34,20 @@ export interface GroundingData {
   turnsRemaining: number;
 }
 
-// ─── Narrative Request ──────────────────────────────────────────────
-// Structured input to the narrative pipeline.
+// ─── Narrative Request (internal provider detail) ───────────────────
+// Structured input passed between DialogueEngine and Provider.
+// Uses self-contained opaque types instead of @shared imports.
+
+type RuntimeEvent = Record<string, unknown>;
+type VisibleState = Record<string, unknown>;
 
 export interface NarrativeRequest {
   id: string;
   type: "narration" | "dialogue";
   turnIndex: number;
-
   events: RuntimeEvent[];
   commandMessage: string;
   visibleState: VisibleState;
-
   dialogueContext?: {
     npcId: string;
     npcName: string;
@@ -54,52 +57,10 @@ export interface NarrativeRequest {
     trustLevel: TrustLevel;
     recentEvents: RuntimeEvent[];
   };
-
   grounding: GroundingData;
-
   timestamp: number;
   lang: "en" | "zh";
 }
-
-export const NarrativeRequestSchema = z.object({
-  id: z.string().min(1),
-  type: z.enum(["narration", "dialogue"]),
-  turnIndex: z.number().int().min(0),
-  events: z.array(
-    z.object({
-      id: z.string(),
-      type: z.string(),
-      sourceCommand: z.string(),
-      roomId: z.string(),
-      turnIndex: z.number(),
-      message: z.string(),
-    })
-  ),
-  commandMessage: z.string().min(1),
-  visibleState: z.any(), // Validated by shared types at construction time
-  dialogueContext: z
-    .object({
-      npcId: z.string(),
-      npcName: z.string(),
-      npcRole: z.string(),
-      topic: z.string(),
-      topicResponse: z.string(),
-      trustLevel: z.number().min(0).max(2),
-      recentEvents: z.array(z.any()),
-    })
-    .optional(),
-  grounding: z.object({
-    currentRoomName: z.string(),
-    visibleExits: z.array(z.string()),
-    presentNpcNames: z.array(z.string()),
-    inventoryItemNames: z.array(z.string()),
-    discoveredClueNames: z.array(z.string()),
-    knownConsequences: z.array(z.string()),
-    turnsRemaining: z.number().int().min(0),
-  }),
-  timestamp: z.number().positive(),
-  lang: z.enum(["en", "zh"]),
-});
 
 // ─── Validation Result ──────────────────────────────────────────────
 
@@ -117,14 +78,12 @@ export interface ValidationResult {
 }
 
 // ─── Narrative Response ─────────────────────────────────────────────
-// Output with provenance — the core design: every response declares its source.
+// Output with provenance — every response declares its source.
 
 export interface NarrativeResponse {
   requestId: string;
   text: string;
-
   source: "ai" | "passthrough";
-
   aiMeta?: {
     providerId: string;
     model: string;
@@ -132,19 +91,9 @@ export interface NarrativeResponse {
     promptTokenCount?: number;
     completionTokenCount?: number;
   };
-
   validation: ValidationResult;
   timestamp: number;
 }
-
-export const NarrativeTextSchema = z
-  .string()
-  .min(1, "AI returned empty response")
-  .max(2000, "AI response exceeds maximum length")
-  .refine(
-    (s) => !s.trim().startsWith("```"),
-    "AI response contains markdown code block formatting"
-  );
 
 // ─── Audit ──────────────────────────────────────────────────────────
 
@@ -152,24 +101,19 @@ export interface AuditRecord {
   requestId: string;
   turnIndex: number;
   requestType: "narration" | "dialogue";
-
   eventTypes: string[];
   commandVerb: string;
-
   responseSource: "ai" | "passthrough";
   responseTextPreview: string;
   validationPassed: boolean;
   constraintViolations: string[];
-
   providerState: ProviderState;
   providerId: string;
-
   promptStructure: {
     systemPromptHash: string;
     groundingFactCount: number;
     eventCount: number;
   };
-
   latencyMs: number;
   timestamp: number;
 }

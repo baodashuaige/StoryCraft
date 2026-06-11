@@ -107,7 +107,7 @@ storycraft-game/
     web/                Vite + TypeScript 浏览器前端
   packages/
     game-runtime/       房间、命令、规则、任务、状态
-    ai-narrative/       AI 对话引擎、提示词构建、门控审核
+    ai-narrative/       AI 对话引擎 → 已发布为 npm 包 [@wutiankai/npc-dialogue](https://www.npmjs.com/package/@wutiankai/npc-dialogue)
     shared/             共享契约与类型
   docs/                 设计文档与开发日志
 ```

@@ -1,6 +1,7 @@
-import { PassthroughProvider, DialogueEngine } from "@ai-narrative";
+import { PassthroughProvider, DialogueEngine } from "@wutiankai/npc-dialogue";
 import type { Lang } from "../i18n";
 import { getKeyConfig, aiChat } from "./api-client";
+import { FROSTMERE_KEYWORDS } from "../worlds/frostmere/keywords";
 
 // ─── Narration mode ─────────────────────────────────────────────────
 export type NarrationMode = "normal" | "smart";
@@ -51,7 +52,7 @@ export async function createDialogueEngine(lang: Lang): Promise<DialogueEngineSe
   if (mode === "normal") {
     const provider = new PassthroughProvider();
     await provider.initialize();
-    const engine = new DialogueEngine(provider, { lang });
+    const engine = new DialogueEngine(provider, { lang, bilingualKeywordMap: FROSTMERE_KEYWORDS });
     await engine.initialize();
     return { engine };
   }
@@ -74,7 +75,7 @@ export async function createDialogueEngine(lang: Lang): Promise<DialogueEngineSe
 
   await provider.initialize();
 
-  const engine = new DialogueEngine(provider, { lang });
+  const engine = new DialogueEngine(provider, { lang, bilingualKeywordMap: FROSTMERE_KEYWORDS });
   await engine.initialize();
 
   return { engine, getProviderStatus: () => provider.getStatus() };
@@ -83,8 +84,8 @@ export async function createDialogueEngine(lang: Lang): Promise<DialogueEngineSe
 // ─── ProxyProvider ──────────────────────────────────────────────────
 // Calls AI through backend proxy — no API key on frontend.
 
-import type { NarrativeProvider } from "@ai-narrative";
-import type { ProviderRawResponse, ProviderState, ProviderStatus } from "@ai-narrative";
+import type { NarrativeProvider } from "@wutiankai/npc-dialogue";
+import type { ProviderRawResponse, ProviderState, ProviderStatus } from "@wutiankai/npc-dialogue";
 
 /** Return type of createDialogueEngine — engine + optional provider diagnostics. */
 export interface DialogueEngineSetup {

@@ -1,9 +1,10 @@
-import type { NpcScript } from "@ai-narrative";
+import type { NpcScript } from "@wutiankai/npc-dialogue";
 
 export const theoScript: NpcScript = {
   npcId: "npc_theo_rusk",
   name: "Theo Rusk",
   role: "Apprentice Clockmaker",
+  worldSetting: "a murder mystery game set in a snowbound manor",
   persona: {
     personality:
       "Nervous and jumpy, especially when questioned. Avoids eye contact. Becomes genuinely passionate and articulate only when discussing clockwork. Quick to deflect blame or change the subject.",

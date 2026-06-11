@@ -13,71 +13,29 @@ import type { DialogueAiResponse, DialogueContext, NpcScript } from "./types";
 // Maps English keywords from secret definitions to common Chinese
 // equivalents so that keyword relevance checks work across languages.
 
-const BILINGUAL_KEYWORD_MAP: Record<string, string[]> = {
-  // Actions
-  "saw": ["看到", "看见", "目击", "见到"],
-  "meeting": ["见面", "会面", "相遇"],
-  "asked": ["问", "询问", "提到"],
-  "confronts": ["对质", "质问", "质询", "质问"],
-  "presents": ["出示", "展示", "拿出", "给"],
-  "requests": ["请求", "要求"],
-  "offers": ["提供", "给"],
-  "gathered": ["收集", "搜集", "找到"],
-  "shows": ["展示", "给看", "出示"],
-  "file": ["提交", "写报告", "立案"],
-  "report": ["报告", "立案", "正式"],
-  "triggered": ["触发", "激活"],
-  "sell": ["卖", "出售", "卖掉"],
-  "staged": ["伪造", "伪造现场", "假造"],
-  "drugged": ["下药", "迷药", "药物"],
-
-  // Objects
-  "bell": ["钟", "铃", "钟声", "铃声"],
-  "tower": ["塔", "塔楼", "钟楼"],
-  "key": ["钥匙"],
-  "designs": ["设计", "设计图", "作品"],
-  "gloves": ["手套"],
-  "ledger": ["账本", "账簿", "账目"],
-  "footprints": ["脚印", "足迹", "痕迹"],
-  "evidence": ["证据", "线索"],
-
-  // People
-  "alden": ["奥登"],
-  "theo": ["西奥"],
-  "mina": ["米娜"],
-  "vale": ["韦尔", "维尔"],
-
-  // Places
-  "garden": ["花园"],
-  "study": ["书房", "办公室"],
-  "stair": ["楼梯", "通道"],
-  "servant": ["仆人", "仆役"],
-
-  // Time
-  "night": ["晚上", "夜里", "那晚", "当晚"],
-  "dawn": ["天亮", "黎明", "天明"],
-  "after": ["之后", "以后", "后"],
-  "death": ["死", "死亡", "死后"],
-
-  // Qualifiers
-  "substantial": ["足够", "充分", "大量"],
-  "mercy": ["宽恕", "仁慈", "原谅"],
-  "betrayal": ["背叛", "出卖"],
-};
-
 /**
  * Expand explicit English keywords with Chinese equivalents for cross-language matching.
+ *
+ * @param englishKeywords - Keywords from secret definitions (typically English)
+ * @param bilingualMap - Optional map of English keyword → Chinese equivalents.
+ *   Provide a game-specific map for bilingual gate matching.
  */
-export function expandKeywordsBilingually(englishKeywords: string[]): string[] {
+export function expandKeywordsBilingually(
+  englishKeywords: string[],
+  bilingualMap?: Record<string, string[]>
+): string[] {
+  if (!bilingualMap || Object.keys(bilingualMap).length === 0) {
+    return [...englishKeywords];
+  }
+
   const expanded: string[] = [...englishKeywords];
   for (const kw of englishKeywords) {
-    // Check if the keyword itself maps
     const lower = kw.toLowerCase();
-    if (BILINGUAL_KEYWORD_MAP[lower]) {
-      expanded.push(...BILINGUAL_KEYWORD_MAP[lower]);
+    if (bilingualMap[lower]) {
+      expanded.push(...bilingualMap[lower]);
     }
     // Also check partial matches (e.g. "tower" in "bell tower")
-    for (const [engKey, zhValues] of Object.entries(BILINGUAL_KEYWORD_MAP)) {
+    for (const [engKey, zhValues] of Object.entries(bilingualMap)) {
       if (lower.includes(engKey) || engKey.includes(lower)) {
         expanded.push(...zhValues);
       }
@@ -99,7 +57,8 @@ export function reviewGateTrigger(
   validated: DialogueAiResponse,
   playerInput: string,
   npcScript: NpcScript,
-  _context: DialogueContext
+  _context: DialogueContext,
+  options?: { bilingualKeywordMap?: Record<string, string[]> }
 ): DialogueAiResponse {
   if (validated.candidateGateId === null) {
     return validated;
@@ -121,7 +80,7 @@ export function reviewGateTrigger(
     ...(secret.triggerKeywords ?? []),
     ...(secret.triggerPhrases ?? []),
   ].filter((term) => term.trim().length > 0);
-  const expandedTerms = expandKeywordsBilingually(triggerTerms);
+  const expandedTerms = expandKeywordsBilingually(triggerTerms, options?.bilingualKeywordMap);
 
   const hasExplicitTerms = expandedTerms.length > 0;
   const hasRelevance = expandedTerms.some((kw) => playerLower.includes(kw.toLowerCase()));

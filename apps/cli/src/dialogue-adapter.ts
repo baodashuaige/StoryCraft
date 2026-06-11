@@ -4,10 +4,11 @@
  */
 import type { CommandInput, WorldState, VisibleState, AdventureDefinition } from "@shared";
 import { executeCommand, getVisibleState, evaluateAll } from "@game-runtime";
-import { DialogueEngine, PassthroughProvider, OpenAICompatibleProvider, loadConfigFromEnv } from "@ai-narrative";
-import type { DialogueResult, NpcScript, DialogueContext, ConversationExchange } from "@ai-narrative";
+import { DialogueEngine, PassthroughProvider, OpenAICompatibleProvider, loadConfigFromEnv } from "@wutiankai/npc-dialogue";
+import type { DialogueResult, NpcScript, DialogueContext, ConversationExchange } from "@wutiankai/npc-dialogue";
 import type { WorldPack } from "../../web/src/world-registry";
 import { classifyIntent } from "../../web/src/services/dialogue-intent";
+import { FROSTMERE_KEYWORDS } from "../../web/src/worlds/frostmere/keywords";
 import type { DialogueIntent } from "../../web/src/services/dialogue-intent";
 import { reviewDialogueCandidates } from "../../web/src/services/dialogue-policy";
 
@@ -49,7 +50,7 @@ export async function createCliDialogueService(lang: string): Promise<CliDialogu
   }
 
   await provider.initialize();
-  const engine = new DialogueEngine(provider, { lang });
+  const engine = new DialogueEngine(provider, { lang, bilingualKeywordMap: FROSTMERE_KEYWORDS });
   await engine.initialize();
 
   return new CliDialogueService(engine);

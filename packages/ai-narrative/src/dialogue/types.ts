@@ -12,6 +12,9 @@ export interface NpcScript {
   npcId: string;
   name: string;
   role: string;
+  /** Optional world/genre framing for the system prompt.
+   *  E.g. "a murder mystery game set in a snowbound manor" */
+  worldSetting?: string;
   persona: {
     personality: string;
     background: string;

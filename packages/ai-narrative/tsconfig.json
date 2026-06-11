@@ -6,12 +6,13 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": "../..",
-    "paths": {
-      "@game-runtime": ["packages/game-runtime/src/index.ts"],
-      "@shared": ["packages/shared/src/index.ts"]
-    }
+    "rootDir": "src"
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "test"]
 }

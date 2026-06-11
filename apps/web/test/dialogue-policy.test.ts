@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { reviewDialogueCandidates } from "../../../apps/web/src/services/dialogue-policy";
+import { reviewDialogueCandidates } from "../src/services/dialogue-policy";
 
 const greetingIntent = { kind: "greeting" as const, isGreeting: true, isShortInput: false };
 const smalltalkIntent = { kind: "smalltalk" as const, isGreeting: false, isShortInput: false };

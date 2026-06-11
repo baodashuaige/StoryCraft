@@ -1,7 +1,7 @@
 import type { CommandInput, WorldState, VisibleState, AdventureDefinition } from "@shared";
 import { executeCommand, getVisibleState, evaluateAll } from "@game-runtime";
-import type { DialogueEngine, DialogueResult, ProviderStatus } from "@ai-narrative";
-import type { NpcScript, DialogueContext, ConversationExchange } from "@ai-narrative";
+import type { DialogueEngine, DialogueResult, ProviderStatus } from "@wutiankai/npc-dialogue";
+import type { NpcScript, DialogueContext, ConversationExchange } from "@wutiankai/npc-dialogue";
 import type { WorldPack } from "../world-registry";
 import { classifyIntent } from "./dialogue-intent";
 import type { DialogueIntent } from "./dialogue-intent";

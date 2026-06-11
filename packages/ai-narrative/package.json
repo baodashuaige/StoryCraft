@@ -1,10 +1,28 @@
 {
-  "name": "@storycraft/ai-narrative",
-  "version": "0.0.0",
-  "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "dependencies": {
-    "zod": "^3.23.0"
+  "name": "@wutiankai/npc-dialogue",
+  "version": "1.0.0-alpha.1",
+  "description": "AI NPC dialogue engine for mystery/investigation games — dialogue generation, gate review, bilingual keyword matching",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.mts", "default": "./dist/index.mjs" },
+      "require": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "test": "node --import tsx --test test/*.test.ts",
+    "prepublishOnly": "npm run build",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["ai", "npc", "dialogue", "mystery", "game", "narrative", "gate-review"],
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.5.0"
   }
 }

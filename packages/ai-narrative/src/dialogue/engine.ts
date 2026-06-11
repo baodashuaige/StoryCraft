@@ -22,6 +22,9 @@ export interface DialogueEngineConfig {
   lang: "en" | "zh";
   maxConversationHistory: number;
   failOpen: boolean;
+  /** Optional bilingual keyword map for cross-language gate matching.
+   *  Keys are English terms, values are arrays of Chinese equivalents. */
+  bilingualKeywordMap?: Record<string, string[]>;
 }
 
 const DEFAULT_DIALOGUE_CONFIG: DialogueEngineConfig = {
@@ -143,7 +146,8 @@ export class DialogueEngine {
       validated,
       request.playerInput,
       request.npcScript,
-      request.context
+      request.context,
+      { bilingualKeywordMap: this.config.bilingualKeywordMap }
     );
 
     // Record audit

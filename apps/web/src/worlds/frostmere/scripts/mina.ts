@@ -1,9 +1,10 @@
-import type { NpcScript } from "@ai-narrative";
+import type { NpcScript } from "@wutiankai/npc-dialogue";
 
 export const minaScript: NpcScript = {
   npcId: "npc_mina_arlen",
   name: "Mina Arlen",
   role: "Housekeeper",
+  worldSetting: "a murder mystery game set in a snowbound manor",
   persona: {
     personality:
       "Calm, restrained, precise in speech. Rarely shows emotion openly. Practical and efficient. Can be warm when trust is earned, but maintains professional distance by default.",

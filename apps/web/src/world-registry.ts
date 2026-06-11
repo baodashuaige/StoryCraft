@@ -1,5 +1,5 @@
 import type { AdventureDefinition } from "@shared";
-import type { NpcScript } from "@ai-narrative";
+import type { NpcScript } from "@wutiankai/npc-dialogue";
 
 // --- Translation types ---
 

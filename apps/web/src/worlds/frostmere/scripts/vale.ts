@@ -1,9 +1,10 @@
-import type { NpcScript } from "@ai-narrative";
+import type { NpcScript } from "@wutiankai/npc-dialogue";
 
 export const valeScript: NpcScript = {
   npcId: "npc_captain_vale",
   name: "Captain Rowan Vale",
   role: "Stranded Constable",
+  worldSetting: "a murder mystery game set in a snowbound manor",
   persona: {
     personality:
       "Direct, military bearing. Values evidence over speculation. Impatient with guesswork and wasted time. Gruff but fair. Will not act without solid grounds.",

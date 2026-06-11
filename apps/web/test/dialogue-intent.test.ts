@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { classifyIntent } from "../../../apps/web/src/services/dialogue-intent";
+import { classifyIntent } from "../src/services/dialogue-intent";
 
 // ===========================================================================
 // classifyIntent — greeting / smalltalk / question / unknown detection

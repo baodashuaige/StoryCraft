@@ -16,7 +16,8 @@ export function buildSystemPromptEn(
   const p = script.persona;
   const privateKnowledge = currentTrust >= 1 ? script.privateKnowledge : [];
 
-  let prompt = `You are ${script.name}, ${script.role}. You are a character in a murder mystery game set in a snowbound manor.
+  const setting = script.worldSetting ?? "a mystery investigation game";
+  let prompt = `You are ${script.name}, ${script.role}. You are a character in ${setting}.
 
 HARD RULES — VIOLATION OF ANY RULE WILL BREAK THE GAME:
 1. You are NOT a narrator, system, detective assistant, or omniscient AI.
@@ -74,11 +75,11 @@ Rules for the JSON fields:
 EXAMPLES:
 
 POSITIVE (player input plausibly relates → set candidateGateId):
-  Player: "Did you hear the bell that night?"
-  → candidateGateId: "topic_mina_bell" (bell mentioned; plausibly related)
+  Player: “I found a strange letter hidden in the desk.”
+  → candidateGateId: “topic_suspect_secret_letter” (letter mentioned; plausibly related)
 
   Player: “你看到那晚的踪迹了吗？”
-  → candidateGateId: "topic_vale_footprints" (footprints mentioned; plausibly related)
+  → candidateGateId: “topic_witness_footprints” (footprints mentioned; plausibly related)
 
 NEGATIVE (nothing relates → leave null):
   Player: "How's the weather today?"
@@ -100,7 +101,9 @@ export function buildSystemPromptZh(
   const p = script.persona;
   const privateKnowledge = currentTrust >= 1 ? script.privateKnowledge : [];
 
-  let prompt = `你是${script.name}，${script.role}。你是一场发生在暴风雪庄园中的谋杀推理游戏中的角色。
+  const setting = script.worldSetting ??
+    "一场神秘的调查推理游戏";
+  let prompt = `你是${script.name}，${script.role}。你是${setting}中的角色。
 
 硬性规则 — 违反任何规则将导致游戏出错：
 1. 你不是旁白、系统、侦探助手或全知 AI。
@@ -158,11 +161,11 @@ JSON 字段规则：
 示例：
 
 正例（玩家输入合理相关 → 设置 candidateGateId）：
-  玩家："你听到那晚的钟声了吗？"
-  → candidateGateId: "topic_mina_bell"（提到了钟，合理相关）
+  玩家："我在书桌里发现了一封奇怪的信。"
+  → candidateGateId: "topic_suspect_secret_letter"（提到了信件，合理相关）
 
   玩家："Did you see the footprints that night?"
-  → candidateGateId: "topic_vale_footprints"（提到了足迹，合理相关）
+  → candidateGateId: "topic_witness_footprints"（提到了足迹，合理相关）
 
 负例（完全不相关 → 保持 null）：
   玩家："今天天气怎么样？"

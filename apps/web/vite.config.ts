@@ -9,11 +9,11 @@ export default defineConfig({
     alias: {
       "@game-runtime": path.resolve(projectRoot, "packages/game-runtime/src/index.ts"),
       "@shared": path.resolve(projectRoot, "packages/shared/src/index.ts"),
-      "@ai-narrative": path.resolve(projectRoot, "packages/ai-narrative/src/index.ts")
+      "@wutiankai/npc-dialogue": path.resolve(projectRoot, "packages/ai-narrative/src/index.ts")
     }
   },
   optimizeDeps: {
-    exclude: ["@game-runtime", "@shared", "@ai-narrative"]
+    exclude: ["@game-runtime", "@shared"]
   },
   build: {
     outDir: "dist",
