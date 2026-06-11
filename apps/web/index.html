@@ -44,9 +44,9 @@
       <span id="room-display">大厅</span>
       <span style="flex:1"></span>
       <span id="user-badge-game" style="display:none"></span>
-      <button id="user-btn-game" style="width:10px;height:10px;border-radius:50%;border:none;background:#4a5568;cursor:pointer;padding:0;margin-left:0.3rem" title="用户"></button>
-      <button id="lang-toggle-game" style="width:10px;height:10px;border-radius:50%;border:none;background:#4a5568;cursor:pointer;padding:0;margin-left:0.3rem" title="语言"></button>
-      <button id="settings-btn-game" style="width:10px;height:10px;border-radius:50%;border:none;background:#4a5568;cursor:pointer;padding:0;margin-left:0.3rem" title="设置"></button>
+      <button id="user-btn-game" class="lang-btn-sm" title="用户">👤</button>
+      <button id="lang-toggle-game" class="lang-btn-sm" title="语言">EN</button>
+      <button id="settings-btn-game" class="lang-btn-sm" title="设置">⚙️</button>
       <span id="config-badge" style="display:none"></span>
     </header>
 
@@ -130,7 +130,7 @@
   <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
 
   <!-- AI 设置弹窗 (no auth — that's separate) -->
-  <div id="settings-modal" class="overlay hidden" style="background:rgba(0,0,0,0.6)">
+  <div id="settings-modal" class="overlay hidden">
     <div class="overlay-content" style="text-align:left;width:420px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px">
       <button id="settings-close" class="lang-btn" title="关闭">✕</button>
       <h2 style="color:var(--text-highlight);margin-bottom:0.75rem" id="settings-title">AI 叙事设置</h2>
@@ -179,7 +179,7 @@
   </div>
 
   <!-- 登录弹窗 (独立于设置) -->
-  <div id="auth-modal" class="overlay hidden" style="background:rgba(0,0,0,0.6)">
+  <div id="auth-modal" class="overlay hidden">
     <div class="overlay-content" style="text-align:left;width:320px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px">
       <button id="auth-close" class="lang-btn" title="关闭">✕</button>
       <!-- Guest state -->

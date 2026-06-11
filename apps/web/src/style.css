@@ -48,7 +48,7 @@ html, body {
 /* ── Vignette overlay ──────────────────────────────────── */
 body::after {
   content: "";
-  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  position: fixed; inset: 0; z-index: 10; pointer-events: none;
   background: radial-gradient(ellipse at center, transparent 65%, rgba(8,6,4,0.15) 88%, rgba(2,1,0,0.25) 100%);
 }
 
@@ -56,7 +56,7 @@ body::after {
 .overlay {
   position: fixed; inset: 0;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(11,10,8,0.94); z-index: 100;
+  background: rgba(11,10,8,0.97); z-index: 300;
 }
 .overlay-content {
   max-width: 560px; text-align: center; padding: 2.5rem 2rem;
@@ -101,9 +101,6 @@ body::after {
   cursor: pointer; border-radius: 2px; transition: all 0.2s;
 }
 .lang-btn-sm:hover { background: var(--btn-hover); }
-#user-btn-game:hover, #lang-toggle-game:hover, #settings-btn-game:hover {
-  background: var(--text-accent);
-}
 
 /* ── Status bar ────────────────────────────────────────── */
 #status-bar {
