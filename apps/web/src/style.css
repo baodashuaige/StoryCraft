@@ -538,9 +538,6 @@ body::after {
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Reduce vignette on mobile (text near edges gets too dark) */
-  body::after { opacity: 0.6; }
-
   /* Overlays */
   .overlay-content h1 { font-size: 1.5rem; }
   .lobby-container { padding: 1rem; }
