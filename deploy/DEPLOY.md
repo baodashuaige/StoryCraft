@@ -1,29 +1,23 @@
 # StoryCraft 部署指南
 
-## 服务器配置 (mastertooling.shop / 118.31.34.132)
+## 服务器配置 (game.wutiankai.cn)
+
+> 旧部署（game.mastertooling.shop）随服务器过期已下线；当前目标为新服务器
+> （game.wutiankai.cn），以下 nginx 容器路径为旧服务器布局示例，新服务器按实际
+> nginx 部署方式调整。
 
 ### 架构
 
 ```
-Docker Nginx (:80) → game.mastertooling.shop
+Nginx (:80) → game.wutiankai.cn
     ├── /    → PM2 storycraft-web (:3000, serve 静态)
     └── /api → PM2 storycraft (:3001, Express)
 ```
 
-### Docker Nginx 配置
+### Nginx 配置
 
-`game.nginx.conf` 需挂载到 xzs-nginx 容器：
-
-```yaml
-# 在 /opt/xzs-deploy/docker-compose.yml 的 nginx.volumes 中添加：
-- ./game.conf:/etc/nginx/conf.d/game.conf:ro
-```
-
-首次部署或更新：
-```bash
-cp game.nginx.conf /opt/xzs-deploy/game.conf
-cd /opt/xzs-deploy && docker compose up -d --force-recreate nginx
-```
+`deploy/game.nginx.conf` 放入 nginx 的 conf.d（容器化则挂载为
+`/etc/nginx/conf.d/game.conf`），然后 reload nginx。
 
 ### PM2 进程
 

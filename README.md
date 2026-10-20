@@ -4,6 +4,11 @@
 
 探索房间、与 NPC 对话、收集线索、破解谜案。
 
+> **仓库角色**：本仓库为 UI/部署迭代协作仓库；**主维护仓库为
+> [tiankai-333/storycraft-game](https://github.com/tiankai-333/storycraft-game)**
+> （含 NPC 对话包 `@wutiankai/npc-dialogue` 源码与重写版 README）。两仓库内容已互相同步，
+> 均在活跃使用。线上访问：[game.wutiankai.cn](http://game.wutiankai.cn)。
+
 ## ✨ 特性
 
 - **双模式游玩** — 浏览器图形界面 + 终端 CLI
@@ -109,23 +114,25 @@ npm run build         # 生产构建
 
 ## 🚢 部署
 
-一键部署脚本，通过 git push 触发服务器拉取并重启：
+一键部署脚本，凭据从环境变量读取（不写入任何文件）：
 
 ```bash
-bash deploy/deploy-local.sh "提交信息"
+DEPLOY_HOST=<服务器IP> DEPLOY_USER=<用户> DEPLOY_PASSWORD=<密码> \
+  bash deploy/deploy-local.sh "提交信息"
 ```
 
 **首次部署服务器配置：**
 
 ```bash
-ssh root@你的服务器
+ssh <用户>@<服务器IP>
 cd /opt/storycraft-game
 touch .env                                          # JWT_SECRET 和 ENCRYPTION_KEY 自动生成
-echo "VITE_API_URL=http://你的IP:3001" > apps/web/.env.production
+echo "VITE_API_URL=http://<服务器IP>:3001" > apps/web/.env.production
 # 启动后用 tb / 123456 登录设置房主 AI 密钥
 ```
 
-> 后续部署只需 `bash deploy/deploy-local.sh`。`.env` 在 `.gitignore` 中，本地和服务器各自维护。
+> 后续部署只需带环境变量重跑 `deploy-local.sh`。`.env` 在 `.gitignore` 中，本地和服务器各自维护。
+> ⚠️ 历史提交曾内嵌过服务器凭据（已从新提交移除）——如仍有效请尽快修改服务器密码。
 
 ## 📖 当前剧本：霜钟楼的最后一声钟响
 
